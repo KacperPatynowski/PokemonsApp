@@ -1,33 +1,49 @@
+/** @jsxImportSource @emotion/react */
+import React from "react";
+import { useState } from "react";
 import { QueryFunction, useQuery } from "react-query";
 import { IPokemonDto } from "types/IPokemonDto";
 
 import { getApiInstance } from "./getApiInstance";
+import { getApiInstanceNoUrl } from "./getApiInstanceNoUrl";
 
-/** @jsxImportSource @emotion/react */
-export const getPokemonsFN: QueryFunction<any> = async ({ queryKey }) => {
-	const randomNumbers: Array<number> = [];
+interface IResults {
+	name: string;
+	url: string;
+}
 
-	const getPokemons = (number: number) => {
-		return getApiInstance().get(`/pokemon/${number}`);
+export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
+	const getPokemons = () => {
+		return getApiInstance().get(`/pokemon?limit=50&offset=0`);
 	};
 
-	for (let i = 1; i < 30; i++) {
-		const n = Math.floor(Math.random() * 100);
-		if (randomNumbers.includes(n)) {
-			continue;
-		}
-		randomNumbers.push(n);
-	}
+	const convertPokemonsCall = (pokemonUrl: string) => {
+		return getApiInstanceNoUrl().get<any>(pokemonUrl);
+	};
 
-	const response = await Promise.all(
-		randomNumbers.map((number) => getPokemons(number))
-	);
+	const convertPokemons = async () => {
+		let pokemonsArrayScope: any[] = [];
+		const pokemonsBefore = await getPokemons();
 
-	return response ?? {};
+		const firstResponse = await pokemonsBefore.data.results.map(
+			async (pokemon: IResults) => {
+				const pokemonAfter = await convertPokemonsCall(pokemon.url);
+				console.log(pokemonAfter);
+				pokemonsArrayScope.push(pokemonAfter);
+			}
+		);
+		console.log(await Promise.all(firstResponse));
+		console.log(pokemonsArrayScope);
+		return pokemonsArrayScope;
+	};
+
+	const response: Promise<any[]> = convertPokemons();
+
+	return await response;
 };
 
 export const usePokemonsQuery = (options: any = {}) => {
-	return useQuery<Array<IPokemonDto>>("Pokemons", getPokemonsFN, {
+	return useQuery<Array<IPokemonDto>>("Pokemons", usePokemonsQuerry, {
 		...options,
 	});
 };
