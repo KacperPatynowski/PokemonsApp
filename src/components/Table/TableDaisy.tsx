@@ -4,11 +4,12 @@ import { faMessage } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Box } from "@mui/system";
 import { PokemonCompareModal } from "components/PokemonCompareModal";
-import { PokemonsContext, usePokemons } from "components/PokemonContext";
 import { PokemonEvolution } from "components/PokemonEvolution";
+import { SearchInput } from "components/SearchInput";
 import React, { ReactElement, ReactNode, ReactPortal, useContext, useState } from "react";
 import { useEffect } from "react";
-import { Badge, Button, ButtonGroup, Mask, Table } from "react-daisyui";
+import { Button, ButtonGroup, Mask, Table } from "react-daisyui";
+import { useLocation, useNavigate } from "react-router-dom";
 import { usePokemonsQuery } from "services/api/usePokemonsQuery";
 import { IPokemonDto } from "types/IPokemonDto";
 
@@ -18,19 +19,31 @@ export const TableDaisy = () => {
 	const [active, setActive] = useState(false);
 	const [active2, setActive2] = useState(false);
 	const [pokemonCompare, setPokemonCompare] = useState(initialPokemon);
+	const [currentPage, setCurrentPage] = useState(0);
 	const [pokemon1, setPokemon1] = useState(initialPokemon);
 	const [activeArray, setActiveArray] = useState(initialArray);
+	const [searchedText, setSearchedText] = useState("");
 	const faPropIcon = faGithub as IconProp;
+
+	const navigate = useNavigate();
+	const location = useLocation();
+
+	console.log(navigate);
+	console.log(location.state);
 
 	// const context = React.useContext(PokemonsProvider);
 	// console.log(context);
-	const pokemons1 = usePokemons();
+	// const pokemons1 = usePokemons();
 
-	const { data: response } = usePokemonsQuery();
+	const { data: response } = usePokemonsQuery(currentPage, searchedText);
 
-	const pokemons = useContext(PokemonsContext);
+	useEffect(() => {
+		console.log(searchedText);
+	}, [searchedText]);
 
-	console.log(pokemons);
+	// const pokemons = useContext(PokemonsContext);
+
+	// console.log(response);
 	const handleClick = (pokemon: IPokemonDto) => {
 		setActiveArray((initialArray) => [...initialArray, pokemon]);
 	};
@@ -74,6 +87,11 @@ export const TableDaisy = () => {
 		);
 	}
 
+	const handleClick3 = (newCurrentPage: number) => {
+		setCurrentPage(newCurrentPage);
+		console.log(currentPage);
+	};
+
 	if (active === true) {
 		return (
 			<>
@@ -91,7 +109,7 @@ export const TableDaisy = () => {
 			<>
 				<Box className="flex justify-center bg-red-500">
 					<Box className="flex-col justify-center overflow-x-auto ">
-						<Table className="rounded-box">
+						<Table className="rounded-box rounded-b-none">
 							<Table.Head>
 								<span>Pokemon Id</span>
 								<span>Pokemon Name</span>
@@ -99,12 +117,19 @@ export const TableDaisy = () => {
 								<span>Type</span>
 								<span>Compare</span>
 								<span>Evolutions</span>
+								<>
+									<SearchInput
+										placeholder="Search"
+										size="xs"
+										onChange={setSearchedText}
+									/>
+								</>
 							</Table.Head>
-							<Table.Body>
-								{pokemons?.map((pokemon: IPokemonDto) => {
+							<Table.Body className="">
+								{response?.map((pokemon: IPokemonDto) => {
 									return (
-										<Table.Row key={pokemon.data!.id}>
-											<div className="flex items-center">
+										<Table.Row className="" key={pokemon.data!.id}>
+											<div className="flex items-center rounded-l-none">
 												{pokemon.data!.id}
 											</div>
 											<div className="flex items-center space-x-3 truncate">
@@ -119,9 +144,6 @@ export const TableDaisy = () => {
 											<div>
 												{pokemon.data!.id}
 												<br />
-												<Badge color="ghost" size="sm">
-													Desktop Support Technician
-												</Badge>
 											</div>
 											<div>{pokemon.data!.types[0].type.name}</div>
 											<div>
@@ -150,20 +172,21 @@ export const TableDaisy = () => {
 													<FontAwesomeIcon icon={faMessage} />
 												</Button>
 											</div>
+											<div className="rounded-r-none"></div>
 										</Table.Row>
 									);
 								})}
 							</Table.Body>
 						</Table>
 						<Box className="w-full h-16 bg-red-500">
-							<Box className="flex h-full justify-center items-center bg-white shadow-xl rounded-box">
+							<Box className="flex h-full justify-center items-center bg-white shadow-xl rounded-box rounded-t-none ">
 								<ButtonGroup>
 									<input
 										type="radio"
 										name="options"
 										data-title="1"
 										className="btn"
-										onClick={() => console.log("xd")}
+										onClick={() => setCurrentPage(50)}
 									/>
 
 									<input
@@ -171,18 +194,21 @@ export const TableDaisy = () => {
 										name="options"
 										data-title="2"
 										className="btn"
+										onClick={() => setCurrentPage(100)}
 									/>
 									<input
 										type="radio"
 										name="options"
 										data-title="3"
 										className="btn"
+										onClick={() => setCurrentPage(150)}
 									/>
 									<input
 										type="radio"
 										name="options"
 										data-title="4"
 										className="btn"
+										onClick={() => setCurrentPage(200)}
 									/>
 								</ButtonGroup>
 							</Box>

@@ -3,6 +3,7 @@ import { Field, Form, Formik } from "formik";
 import React, { useRef, useState } from "react";
 import { useEffect } from "react";
 import { Artboard, Button, Input, Select } from "react-daisyui";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { FormGroup, Label } from "reactstrap";
 import { routes } from "routes";
 import { useStarterPokemons } from "services/api/useStarterPokemons";
@@ -13,6 +14,7 @@ export const OpenModal = () => {
 	const { data: response } = useStarterPokemons();
 	const [activePokemon, setActivePokemon] = useState(0);
 	const [activeClass, setActiveClass] = useState(false);
+	const location = useLocation();
 
 	const regionNames = [
 		"Kanto",
@@ -48,10 +50,12 @@ export const OpenModal = () => {
 								<Formik
 									initialValues={initValues}
 									onSubmit={(values, actions) => {
-										setTimeout(() => {
-											alert(JSON.stringify(values, null, 2));
-											actions.setSubmitting(false);
-										}, 1000);
+										actions.setSubmitting(false);
+										<Navigate
+											to={routes.pokemonTable}
+											state={{ values: values }}
+											replace
+										/>;
 									}}
 								>
 									{(props) => (
@@ -167,14 +171,15 @@ export const OpenModal = () => {
 													</div>
 												</FormGroup>
 												<br />
-												<Button
-													className="btn-lg w-20"
-													type="submit"
-													href={routes.pokemonTable}
-													onClick={() => console.log(props.values)}
-												>
-													Yay!
-												</Button>
+												<Link to={routes.pokemonTable} state={props.values}>
+													<Button
+														className="btn-lg w-20"
+														type="submit"
+														onClick={() => console.log(props.values)}
+													>
+														Yay!
+													</Button>
+												</Link>
 											</div>
 
 											<div className="flex justify-center m-4"></div>
@@ -191,8 +196,3 @@ export const OpenModal = () => {
 		return <h1>Loading...</h1>;
 	}
 };
-
-// to={routes.contacts.profile.replace(
-// 	":id",
-// 	contact?.id
-// )}

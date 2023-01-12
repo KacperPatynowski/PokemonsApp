@@ -1,33 +1,75 @@
+import React from "react";
+import { useState } from "react";
 import { QueryFunction, useQuery } from "react-query";
 import { IPokemonDto } from "types/IPokemonDto";
 
 import { getApiInstance } from "./getApiInstance";
+import { getApiInstance2 } from "./getApiInstance2";
 
 /** @jsxImportSource @emotion/react */
-export const getPokemonsFN: QueryFunction<any> = async ({ queryKey }) => {
-	const randomNumbers: Array<number> = [];
+interface IResults {
+	name: string;
+	url: string;
+}
 
-	const getPokemons = (number: number) => {
-		return getApiInstance().get(`/pokemon/${number}`);
+export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
+	const [_key, { page, searchedText }] = queryKey as [
+		string,
+		{
+			page: number;
+			searchedText: string;
+		}
+	];
+	console.log(page);
+
+	const searchPokemons = async (searchText: string) => {
+		let returnArray: any[] = [];
+		const searchedPokemon = await getApiInstance().get<any>(
+			`/pokemon/${searchedText}`
+		);
+		returnArray.push(searchedPokemon);
+		console.log(returnArray);
+		return returnArray;
 	};
 
-	for (let i = 1; i < 30; i++) {
-		const n = Math.floor(Math.random() * 100);
-		if (randomNumbers.includes(n)) {
-			continue;
-		}
-		randomNumbers.push(n);
+	//usunac funcje zeby zapytania robic prosto do apiInstance
+	const getPokemons = (page: number) => {
+		return getApiInstance().get(`/pokemon?limit=50&offset=${page}`);
+	};
+
+	const convertPokemonsCall = (pokemonUrl: string) => {
+		return getApiInstance2().get<any>(pokemonUrl);
+	};
+
+	const convertPokemons = async () => {
+		let pokemonsArrayScope: any[] = [];
+		const pokemonsBefore = await getPokemons(page);
+
+		const firstResponse = await pokemonsBefore.data.results.map(
+			async (pokemon: IResults) => {
+				const pokemonAfter = await convertPokemonsCall(pokemon.url);
+				pokemonsArrayScope.push(pokemonAfter);
+			}
+		);
+
+		await Promise.all(firstResponse);
+
+		return pokemonsArrayScope;
+	};
+
+	if (searchedText) {
+		const response = searchPokemons(searchedText);
+		return response;
 	}
 
-	const response = await Promise.all(
-		randomNumbers.map((number) => getPokemons(number))
-	);
+	const response: Promise<any[]> = convertPokemons();
 
-	return response ?? {};
+	return await response;
 };
 
-export const usePokemonsQuery = (options: any = {}) => {
-	return useQuery<Array<IPokemonDto>>("Pokemons", getPokemonsFN, {
-		...options,
-	});
+export const usePokemonsQuery = (page = 0, searchedText = "") => {
+	return useQuery<Array<IPokemonDto>>(
+		["Pokemons", { page, searchedText }],
+		usePokemonsQuerry
+	);
 };
