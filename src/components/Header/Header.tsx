@@ -9,7 +9,7 @@ interface IProps {
 
 export const Header = () => {
 	const location = useLocation();
-	console.log(location.state);
+	// console.log(location.state);
 	return (
 		<Box className="w-full h-16 p-2 bg-red-500">
 			<Box className="flex justify-end h-full bg-white shadow-xl rounded-box">

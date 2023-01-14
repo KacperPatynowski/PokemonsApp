@@ -28,8 +28,8 @@ export const TableDaisy = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	console.log(navigate);
-	console.log(location.state);
+	// console.log(navigate);
+	// console.log(location.state);
 
 	// const context = React.useContext(PokemonsProvider);
 	// console.log(context);
@@ -214,6 +214,7 @@ export const TableDaisy = () => {
 							</Box>
 						</Box>
 					</Box>
+					<button placeholder="Submit"> asdsadsa	</button>
 				</Box>
 			</>
 		);
