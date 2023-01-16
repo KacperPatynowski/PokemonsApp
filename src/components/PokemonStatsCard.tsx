@@ -3,8 +3,6 @@ import { useEffect } from "react";
 import { RadialAreaChart, RadialAxis } from "reaviz";
 
 export const PokemonStatsCard = (pokemon: any) => {
-	console.log(pokemon);
-
 	const categoryData: Array<any> = [
 		{
 			id: "1",
@@ -38,13 +36,7 @@ export const PokemonStatsCard = (pokemon: any) => {
 		},
 	];
 
-	useEffect(() => {
-		console.log(pokemon.pokemon.data);
-	}, [pokemon]);
-
-	console.log(pokemon?.data);
 	const pokemonImg = pokemon?.pokemon.data?.sprites?.front_default ?? "";
-	console.log(pokemonImg);
 
 	return (
 		<>

@@ -13,11 +13,13 @@ interface IResults {
 }
 
 export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
-	const [_key, { page, searchedText }] = queryKey as [
+	const [_key, { page, searchedText, regionFilter, typeFilter }] = queryKey as [
 		string,
 		{
 			page: number;
 			searchedText: string;
+			regionFilter: number;
+			typeFilter: string;
 		}
 	];
 	console.log(page);
@@ -28,7 +30,7 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
 			`/pokemon/${searchedText}`
 		);
 		returnArray.push(searchedPokemon);
-		console.log(returnArray);
+		console.log(searchedPokemon);
 		return returnArray;
 	};
 
@@ -37,13 +39,18 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
 		return getApiInstance().get(`/pokemon?limit=50&offset=${page}`);
 	};
 
+	const getTypeFn = (type: string) => {
+		return getApiInstance().get(`/type/${type}`);
+	};
+
 	const convertPokemonsCall = (pokemonUrl: string) => {
 		return getApiInstance2().get<any>(pokemonUrl);
 	};
 
-	const convertPokemons = async () => {
+	const convertPokemons = async (pokemonList: any) => {
+		console.log(pokemonList);
 		let pokemonsArrayScope: any[] = [];
-		const pokemonsBefore = await getPokemons(page);
+		const pokemonsBefore = pokemonList;
 
 		const firstResponse = await pokemonsBefore.data.results.map(
 			async (pokemon: IResults) => {
@@ -57,19 +64,57 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
 		return pokemonsArrayScope;
 	};
 
+	// const convertPokemonsType = async (pokemonList: any) => {
+	// 	let pokemonsArrayScope: any[] = [];
+	// 	const pokemonsBefore = pokemonList;
+
+	// 	const firstResponse = await pokemonsBefore.data.pokemon.map(
+	// 		async (pokemon: IResults) => {
+	// 			const pokemonAfter = await convertPokemonsCall(pokemon.url);
+	// 			pokemonsArrayScope.push(pokemonAfter);
+	// 		}
+	// 	);
+
+	// 	await Promise.all(firstResponse);
+
+	// 	return pokemonsArrayScope;
+	// };
+
 	if (searchedText) {
 		const response = searchPokemons(searchedText);
 		return response;
 	}
 
-	const response: Promise<any[]> = convertPokemons();
+	if (typeFilter) {
+		const typePokemonsBeforeList = await getTypeFn(typeFilter);
+		console.log(typePokemonsBeforeList);
+		const response = await convertPokemons(typePokemonsBeforeList.data.pokemon);
+		console.log(response);
+		return response;
+	}
+
+	if (regionFilter) {
+		console.log(regionFilter);
+	}
+
+	const pokemonsListBefore = await getPokemons(page);
+	console.log(pokemonsListBefore.data.results);
+
+	const response: Promise<any[]> = convertPokemons(
+		pokemonsListBefore.data.results
+	);
 
 	return await response;
 };
 
-export const usePokemonsQuery = (page = 0, searchedText = "") => {
+export const usePokemonsQuery = (
+	page = 0,
+	searchedText = "",
+	regionFilter = "",
+	typeFilter = ""
+) => {
 	return useQuery<Array<IPokemonDto>>(
-		["Pokemons", { page, searchedText }],
+		["Pokemons", { page, searchedText, regionFilter, typeFilter }],
 		usePokemonsQuerry
 	);
 };

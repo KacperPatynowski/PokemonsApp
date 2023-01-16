@@ -8,11 +8,14 @@ import { PokemonEvolution } from "components/PokemonEvolution";
 import { SearchInput } from "components/SearchInput";
 import React, { ReactElement, ReactNode, ReactPortal, useContext, useState } from "react";
 import { useEffect } from "react";
-import { Button, ButtonGroup, Mask, Table } from "react-daisyui";
+import { Button, ButtonGroup, Dropdown, Mask, Table } from "react-daisyui";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePokemonsQuery } from "services/api/usePokemonsQuery";
+import { useRegionQuery } from "services/api/useRegionQuery";
+import { useTypeListQuery } from "services/api/useTypeQuery";
 import { IPokemonDto } from "types/IPokemonDto";
 
+// import { SearchInput } from "components/SearchInput";
 export const TableDaisy = () => {
 	const initialArray: Array<IPokemonDto> = [];
 	const initialPokemon: IPokemonDto = {};
@@ -24,6 +27,8 @@ export const TableDaisy = () => {
 	const [activeArray, setActiveArray] = useState(initialArray);
 	const [searchedText, setSearchedText] = useState("");
 	const faPropIcon = faGithub as IconProp;
+	const [typeFilter, setTypeFilter] = useState("normal");
+	const [regionFilter, setRegionFilter] = useState("region");
 
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -35,7 +40,15 @@ export const TableDaisy = () => {
 	// console.log(context);
 	// const pokemons1 = usePokemons();
 
-	const { data: response } = usePokemonsQuery(currentPage, searchedText);
+	const { data: response } = usePokemonsQuery(
+		currentPage,
+		searchedText,
+		regionFilter,
+		typeFilter
+	);
+	const { data: typeResponse } = useTypeListQuery();
+	const { data: regionResponse } = useRegionQuery();
+	console.log(typeResponse);
 
 	useEffect(() => {
 		console.log(searchedText);
@@ -110,13 +123,48 @@ export const TableDaisy = () => {
 				<Box className="flex justify-center bg-red-500">
 					<Box className="flex-col justify-center overflow-x-auto ">
 						<Table className="rounded-box rounded-b-none">
-							<Table.Head>
-								<span>Pokemon Id</span>
-								<span>Pokemon Name</span>
-								<span>Region</span>
-								<span>Type</span>
-								<span>Compare</span>
-								<span>Evolutions</span>
+							<Table.Head className="">
+								<></>
+								<>
+									<Box>
+										<Dropdown>
+											<Dropdown.Toggle>{regionFilter}</Dropdown.Toggle>
+											<Dropdown.Menu className="w-52">
+												{regionResponse?.results?.map(
+													(region: { name: string; url: string }) => {
+														return (
+															<Dropdown.Item
+																onClick={() => setRegionFilter(region.name)}
+															>
+																{region.name}
+															</Dropdown.Item>
+														);
+													}
+												)}
+											</Dropdown.Menu>
+										</Dropdown>
+									</Box>
+								</>
+								<>
+									<Box>
+										<Dropdown>
+											<Dropdown.Toggle>{typeFilter}</Dropdown.Toggle>
+											<Dropdown.Menu className="w-52">
+												{typeResponse?.results?.map(
+													(type: { name: string; url: string }) => {
+														return (
+															<Dropdown.Item
+																onClick={() => setTypeFilter(type.name)}
+															>
+																{type.name}
+															</Dropdown.Item>
+														);
+													}
+												)}
+											</Dropdown.Menu>
+										</Dropdown>
+									</Box>
+								</>
 								<>
 									<SearchInput
 										placeholder="Search"
@@ -124,6 +172,16 @@ export const TableDaisy = () => {
 										onChange={setSearchedText}
 									/>
 								</>
+								<></>
+								<></>
+							</Table.Head>
+							<Table.Head>
+								<span>Pokemon Id</span>
+								<span>Pokemon Name</span>
+								<span>Region</span>
+								<span>Type</span>
+								<span>Compare</span>
+								<span>Evolutions</span>
 							</Table.Head>
 							<Table.Body className="">
 								{response?.map((pokemon: IPokemonDto) => {
@@ -172,7 +230,6 @@ export const TableDaisy = () => {
 													<FontAwesomeIcon icon={faMessage} />
 												</Button>
 											</div>
-											<div className="rounded-r-none"></div>
 										</Table.Row>
 									);
 								})}
@@ -214,7 +271,6 @@ export const TableDaisy = () => {
 							</Box>
 						</Box>
 					</Box>
-					<button placeholder="Submit"> asdsadsa	</button>
 				</Box>
 			</>
 		);
