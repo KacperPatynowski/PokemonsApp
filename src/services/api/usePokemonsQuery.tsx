@@ -13,24 +13,21 @@ interface IResults {
 }
 
 export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
-	const [_key, { page, searchedText, regionFilter, typeFilter }] = queryKey as [
+	const [_key, { page, searchedText }] = queryKey as [
 		string,
 		{
 			page: number;
 			searchedText: string;
-			regionFilter: number;
-			typeFilter: string;
 		}
 	];
-	console.log(page);
 
 	const searchPokemons = async (searchText: string) => {
 		let returnArray: any[] = [];
 		const searchedPokemon = await getApiInstance().get<any>(
-			`/pokemon/${searchedText}`
+			`/pokemon/${searchText}`
 		);
 		returnArray.push(searchedPokemon);
-		console.log(searchedPokemon);
+
 		return returnArray;
 	};
 
@@ -48,11 +45,28 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
 	};
 
 	const convertPokemons = async (pokemonList: any) => {
-		console.log(pokemonList);
 		let pokemonsArrayScope: any[] = [];
 		const pokemonsBefore = pokemonList;
 
 		const firstResponse = await pokemonsBefore.data.results.map(
+			async (pokemon: IResults) => {
+				const pokemonAfter = await convertPokemonsCall(pokemon.url);
+				console.log(pokemonAfter);
+				pokemonsArrayScope.push(pokemonAfter);
+			}
+		);
+
+		await Promise.all(firstResponse);
+		console.log(firstResponse);
+		console.log(pokemonsArrayScope);
+		return pokemonsArrayScope;
+	};
+
+	const convertPokemonsType = async (pokemonList: any) => {
+		let pokemonsArrayScope: any[] = [];
+		const pokemonsBefore = pokemonList;
+
+		const firstResponse = await pokemonsBefore.data.pokemon.map(
 			async (pokemon: IResults) => {
 				const pokemonAfter = await convertPokemonsCall(pokemon.url);
 				pokemonsArrayScope.push(pokemonAfter);
@@ -64,57 +78,34 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
 		return pokemonsArrayScope;
 	};
 
-	// const convertPokemonsType = async (pokemonList: any) => {
-	// 	let pokemonsArrayScope: any[] = [];
-	// 	const pokemonsBefore = pokemonList;
-
-	// 	const firstResponse = await pokemonsBefore.data.pokemon.map(
-	// 		async (pokemon: IResults) => {
-	// 			const pokemonAfter = await convertPokemonsCall(pokemon.url);
-	// 			pokemonsArrayScope.push(pokemonAfter);
-	// 		}
-	// 	);
-
-	// 	await Promise.all(firstResponse);
-
-	// 	return pokemonsArrayScope;
-	// };
-
 	if (searchedText) {
 		const response = searchPokemons(searchedText);
+
 		return response;
 	}
 
-	if (typeFilter) {
-		const typePokemonsBeforeList = await getTypeFn(typeFilter);
-		console.log(typePokemonsBeforeList);
-		const response = await convertPokemons(typePokemonsBeforeList.data.pokemon);
-		console.log(response);
-		return response;
-	}
+	// if (typeFilter) {
+	// 	const typePokemonsBeforeList = await getTypeFn(typeFilter);
 
-	if (regionFilter) {
-		console.log(regionFilter);
-	}
+	// 	const response = await convertPokemons(typePokemonsBeforeList.data.pokemon);
+
+	// 	return response;
+	// }
+
+	// if (regionFilter) {
+	// }
 
 	const pokemonsListBefore = await getPokemons(page);
 	console.log(pokemonsListBefore.data.results);
 
-	const response: Promise<any[]> = convertPokemons(
-		pokemonsListBefore.data.results
-	);
+	const response: Promise<any[]> = convertPokemons(pokemonsListBefore);
 
 	return await response;
 };
 
-export const usePokemonsQuery = (
-	page = 0,
-	searchedText = "",
-	regionFilter = "",
-	typeFilter = ""
-) => {
+export const usePokemonsQuery = (page = 0, searchedText = "") => {
 	return useQuery<Array<IPokemonDto>>(
-		["Pokemons", { page, searchedText, regionFilter, typeFilter }],
+		["Pokemons", { page, searchedText }],
 		usePokemonsQuerry
 	);
 };

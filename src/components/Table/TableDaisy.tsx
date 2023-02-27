@@ -40,19 +40,12 @@ export const TableDaisy = () => {
 	// console.log(context);
 	// const pokemons1 = usePokemons();
 
-	const { data: response } = usePokemonsQuery(
-		currentPage,
-		searchedText,
-		regionFilter,
-		typeFilter
-	);
+	const { data: response } = usePokemonsQuery(currentPage, searchedText);
+
 	const { data: typeResponse } = useTypeListQuery();
 	const { data: regionResponse } = useRegionQuery();
-	console.log(typeResponse);
 
-	useEffect(() => {
-		console.log(searchedText);
-	}, [searchedText]);
+	useEffect(() => {}, [searchedText]);
 
 	// const pokemons = useContext(PokemonsContext);
 
