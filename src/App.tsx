@@ -1,7 +1,10 @@
 import "./App.css";
 
 import { CssBaseline } from "@mui/material";
+import NewTable from "components/NewTable/NewTable";
+import OddTable from "components/OddTable/OddTable";
 import { PokemonsProvider } from "components/PokemonContext";
+import { TableDaisy } from "components/Table";
 import { PokemonsPage } from "pages/PokemonsPage";
 import React, { useContext, useEffect, useState } from "react";
 import { QueryClient } from "react-query";
@@ -57,6 +60,9 @@ const App = () => {
 							<Routes>
 								<Route path={routes.modal} element={<OpenModal />} />
 								<Route path={routes.pokemonTable} element={<PokemonsPage />} />
+								<Route path={routes.old} element={<TableDaisy />} />
+								<Route path={routes.new} element={<NewTable />} />
+								<Route path={routes.odd} element={<OddTable />} />
 								{/* <Route path={routes.pokemonCompare} element={<PokemonCompareModal/>}/> */}
 							</Routes>
 						</BrowserRouter>

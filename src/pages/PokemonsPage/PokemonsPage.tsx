@@ -1,7 +1,6 @@
 import { Header } from "components/Header/Header";
+import NewTable from "components/NewTable/NewTable";
 import React from "react";
-
-import { TableDaisy } from "../../../src/components/Table";
 
 // import { Box, Typography } from "@mui/material";
 export const PokemonsPage = () => {
@@ -17,7 +16,7 @@ export const PokemonsPage = () => {
 				</div>
 			</div> */}
 			<Header />
-			<TableDaisy />
+			<NewTable />
 		</>
 	);
 };

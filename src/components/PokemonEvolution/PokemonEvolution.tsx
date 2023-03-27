@@ -1,3 +1,5 @@
+/** @format */
+
 import { Box } from "@mui/material";
 import { PokemonStatsCard } from "components/PokemonStatsCard";
 import React, { ReactElement, useEffect } from "react";
@@ -6,43 +8,43 @@ import { usePokemonsStatsQuery } from "services/api/usePokemonsStatsQuery";
 import { IPokemonDto } from "types/IPokemonDto";
 
 interface IProps {
-	pokemon: IPokemonDto;
-	buttonMessage?: string;
+  pokemonId: number;
+  buttonMessage?: string;
 }
 
-export const PokemonEvolution = ({ pokemon, buttonMessage }: IProps) => {
-	const pokemonId: number = pokemon!.data!.id;
+export const PokemonEvolution = ({ pokemonId, buttonMessage }: IProps) => {
+  const { data: response } = usePokemonEvolution(pokemonId);
+  const getPoekmonsArray = () => {
+    let pokemonsArray2: Array<any> = [];
 
-	const { data: response } = usePokemonEvolution(pokemonId);
-	const getPoekmonsArray = () => {
-		let pokemonsArray2: Array<any> = [];
+    if (response) {
+      pokemonsArray2 = [
+        response!.data.chain.species?.name ?? "",
+        response!.data.chain.evolves_to[0]?.species?.name ?? "",
+      ];
+      if (response!.data.chain.evolves_to[0]?.evolves_to[0]?.species?.name) {
+        pokemonsArray2.push(
+          response!.data.chain.evolves_to[0]?.evolves_to[0]?.species?.name,
+        );
+      }
+    }
 
-		if (response) {
-			pokemonsArray2 = [
-				response!.data.chain.species?.name ?? "",
-				response!.data.chain.evolves_to[0]?.species?.name ?? "",
-			];
-			if (response!.data.chain.evolves_to[0]?.evolves_to[0]?.species?.name) {
-				pokemonsArray2.push(
-					response!.data.chain.evolves_to[0]?.evolves_to[0]?.species?.name
-				);
-			}
-		}
+    return pokemonsArray2;
+  };
 
-		return pokemonsArray2;
-	};
+  const pokemons1 = getPoekmonsArray();
 
-	const pokemons1 = getPoekmonsArray();
+  const { data: pokemonsResponse } = usePokemonsStatsQuery(pokemons1);
 
-	const { data: pokemonsResponse } = usePokemonsStatsQuery(pokemons1);
-
-	return (
-		<>
-			<Box className="bg-white flex justify-center">
-				{pokemonsResponse?.map((pokemon1) => {
-					return <PokemonStatsCard pokemon={pokemon1} />;
-				})}
-			</Box>
-		</>
-	);
+  return (
+    <>
+      <Box>
+        <Box className="bg-white flex justify-center">
+          {pokemonsResponse?.map((pokemon1) => {
+            return <PokemonStatsCard pokemon={pokemon1} />;
+          })}
+        </Box>
+      </Box>
+    </>
+  );
 };
