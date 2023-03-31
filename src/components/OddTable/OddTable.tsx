@@ -5,6 +5,7 @@ import {
   AutoAwesome as AutoAwesomeIcon,
   Bolt as BoltIcon,
   Brightness5 as Brightness5Icon,
+  CheckBox,
   FilterDrama as FilterDramaIcon,
   FilterHdr as FilterHdrIcon,
   FilterVintage as FilterVintageIcon,
@@ -22,9 +23,10 @@ import {
   Warning as WarningIcon,
   Water as WaterIcon,
 } from "@mui/icons-material";
-import { Box } from "@mui/material";
+import { Box, Checkbox, Chip, FormControlLabel } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import { PokemonCard } from "components/PokemonCard";
+import { PokemonEvolution } from "components/PokemonEvolution";
 import * as React from "react";
 import { usePokemonsQuery } from "services/api/usePokemonsQuery";
 import { IPokemonDto } from "types/IPokemonDto";
@@ -64,28 +66,36 @@ export default function OddTable() {
 
   if (response) {
     return (
-      <Paper
-        sx={{
-          width: "100%",
-          height: "100%",
-          overflow: "hidden",
-          align: "center",
-        }}
-      >
-        <Box sx={{ margin: "auto", height: "100%" }}>
-          <div className="flex flex-col gap-2 justify-center items-center ">
-            {response.map(({ data }: IPokemonDto, index) => {
-              const { id, name, sprites, types } = data || {};
+      <div className="">
+        <Paper
+          sx={{
+            width: "100%",
+            height: "100%",
+            overflow: "hidden",
+            align: "center",
+          }}
+        >
+          <Box sx={{ margin: "auto", height: "100%" }}>
+            <div className="flex flex-col gap-1 justify-center items-center ">
+              {response.map(({ data }: IPokemonDto, index) => {
+                const { id, name, sprites, types } = data || {};
 
-              return (
-                <div key={index} className="w-96 m-6 [height:30rem] relative">
-                  <PokemonCard data={data} key={id} />
-                </div>
-              );
-            })}
-          </div>
-        </Box>
-      </Paper>
+                return (
+                  <div
+                    key={index}
+                    className="w-96 mx-6 [height:30rem] relative flex justify-center items-center hover:[transform:rotateY(180deg)] [transform-style:preserve-3d] transition-all delay-500 duration-500 ease"
+                  >
+                    <PokemonCard data={data} key={id} />
+                    <div className="[backface-visibility:hidden] [transform:rotateY(180deg)] w-full h-full absolute top-0 ">
+                      <PokemonEvolution pokemonId={id!} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Box>
+        </Paper>
+      </div>
     );
   } else return <p>refresh</p>;
 }

@@ -1,3 +1,5 @@
+/** @format */
+
 import "./App.css";
 
 import { CssBaseline } from "@mui/material";
@@ -15,62 +17,62 @@ import { useStarterPokemons } from "services/api/useStarterPokemons";
 import { OpenModal } from "../src/components/Modal";
 
 export const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			refetchOnWindowFocus: false,
-		},
-	},
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
 });
 const App = () => {
-	const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-	// const { data: response } = usePokemonsQuery();
-	// const PokemonContext = React.createContext(response);
+  // const { data: response } = usePokemonsQuery();
+  // const PokemonContext = React.createContext(response);
 
-	useEffect(() => {
-		setInterval(() => setIsOpen(!isOpen), 1);
-	}, []);
+  useEffect(() => {
+    setInterval(() => setIsOpen(!isOpen), 1);
+  }, []);
 
-	//
+  //
 
-	const { data: starterResponse } = useStarterPokemons();
+  const { data: starterResponse } = useStarterPokemons();
 
-	const regionNames = [
-		"Kanto",
-		"Johto",
-		"Hoenn",
-		"Sinnoh",
-		"Hisui",
-		"Unova",
-		"Kalos",
-		"Alola",
-		"Galar",
-		"Paldea",
-	];
+  const regionNames = [
+    "Kanto",
+    "Johto",
+    "Hoenn",
+    "Sinnoh",
+    "Hisui",
+    "Unova",
+    "Kalos",
+    "Alola",
+    "Galar",
+    "Paldea",
+  ];
 
-	// const context = useContext(PokemonsProvider.)
+  // const context = useContext(PokemonsProvider.)
 
-	return (
-		<>
-			<div className="w-screen h-screen">
-				<PokemonsProvider>
-					<React.StrictMode>
-						<BrowserRouter>
-							<CssBaseline />
-							<Routes>
-								<Route path={routes.modal} element={<OpenModal />} />
-								<Route path={routes.pokemonTable} element={<PokemonsPage />} />
-								<Route path={routes.old} element={<TableDaisy />} />
-								<Route path={routes.new} element={<NewTable />} />
-								<Route path={routes.odd} element={<OddTable />} />
-								{/* <Route path={routes.pokemonCompare} element={<PokemonCompareModal/>}/> */}
-							</Routes>
-						</BrowserRouter>
-					</React.StrictMode>
-				</PokemonsProvider>
-			</div>
-		</>
-	);
+  return (
+    <>
+      <div className="w-screen h-screen">
+        <PokemonsProvider>
+          <React.StrictMode>
+            <BrowserRouter>
+              <CssBaseline />
+              <Routes>
+                <Route path={routes.modal} element={<OpenModal />} />
+                <Route path={routes.pokemonTable} element={<PokemonsPage />} />
+
+                <Route path={routes.new} element={<NewTable />} />
+                <Route path={routes.odd} element={<OddTable />} />
+                {/* <Route path={routes.pokemonCompare} element={<PokemonCompareModal/>}/> */}
+              </Routes>
+            </BrowserRouter>
+          </React.StrictMode>
+        </PokemonsProvider>
+      </div>
+    </>
+  );
 };
 
 export default App;
