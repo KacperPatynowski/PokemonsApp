@@ -1,10 +1,11 @@
+/** @format */
+
 import "./App.css";
 
 import { CssBaseline } from "@mui/material";
 import NewTable from "components/NewTable/NewTable";
-import OddTable from "components/OddTable/OddTable";
+import PokemonsTable from "components/OddTable/OddTable";
 import { PokemonsProvider } from "components/PokemonContext";
-
 import { PokemonsPage } from "pages/PokemonsPage";
 import React, { useContext, useEffect, useState } from "react";
 import { QueryClient } from "react-query";
@@ -12,7 +13,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { routes } from "routes";
 import { useStarterPokemons } from "services/api/useStarterPokemons";
 
-import { OpenModal } from "../src/components/Modal";
+import { SignUp } from "../src/components/Modal";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,12 +59,8 @@ const App = () => {
             <BrowserRouter>
               <CssBaseline />
               <Routes>
-                <Route path={routes.signup} element={<OpenModal />} />
+                <Route path={routes.signup} element={<SignUp />} />
                 <Route path={routes.pokemonTable} element={<PokemonsPage />} />
-
-                <Route path={routes.new} element={<NewTable />} />
-                <Route path={routes.odd} element={<OddTable />} />
-                {/* <Route path={routes.pokemonCompare} element={<PokemonCompareModal/>}/> */}
               </Routes>
             </BrowserRouter>
           </React.StrictMode>

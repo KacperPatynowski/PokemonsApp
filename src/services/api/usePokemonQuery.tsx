@@ -1,39 +1,27 @@
+/** @format */
+
 import { QueryFunction, useQuery } from "react-query";
 import { IPokemonChainDto } from "types/IPokemonChainDto";
-import sliceUrl from "utils/sliceUrl";
 
 import { getApiInstance } from "./getApiInstance";
 
 export const getPokemonEvolutionQuery2: QueryFunction<any> = async ({
-	queryKey,
+  queryKey,
 }) => {
-	const [_key, { pokemonName }] = queryKey as [
-		string,
-		{
-			pokemonName: string;
-		}
-	];
+  const [_key, pokemonName] = queryKey as [string, string];
 
-	const getSpecies = (pokemonName: string) => {
-		return getApiInstance().get(`/pokemon/${pokemonName}`);
-	};
-	const getEvolutionChain = (url: string) => {
-		return getApiInstance().get(url);
-	};
+  const species = await getApiInstance().get(`/pokemon/${pokemonName}`);
 
-	const species = await getSpecies(pokemonName);
+  const response = await getApiInstance().get(
+    species.data.evolution_chain.url.slice(26, -1),
+  );
 
-	const evolutionChain = sliceUrl(species.data.evolution_chain.url);
-
-	const response = await getEvolutionChain(evolutionChain);
-
-	console.log(response);
-	return response ?? {};
+  return response;
 };
 
 export const usePokemonQuery = (pokemonName: string) => {
-	return useQuery<IPokemonChainDto>(
-		["pokemonEvolutions", { pokemonName }],
-		getPokemonEvolutionQuery2
-	);
+  return useQuery<IPokemonChainDto>(
+    ["pokemonEvolutions", pokemonName],
+    getPokemonEvolutionQuery2,
+  );
 };

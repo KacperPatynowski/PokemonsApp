@@ -1,4 +1,8 @@
-/** @jsxImportSource @emotion/react */
+/**
+ * @format
+ * @jsxImportSource @emotion/react
+ */
+
 import React from "react";
 import { useState } from "react";
 import { QueryFunction, useQuery } from "react-query";
@@ -7,43 +11,94 @@ import { IPokemonDto } from "types/IPokemonDto";
 import { getApiInstance } from "./getApiInstance";
 import { getApiInstanceNoUrl } from "./getApiInstanceNoUrl";
 
+/** @jsxImportSource @emotion/react */
 interface IResults {
-	name: string;
-	url: string;
+  name: string;
+  url: string;
 }
 
 export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
-	const getPokemons = () => {
-		return getApiInstance().get(`/pokemon?limit=50&offset=0`);
-	};
+  const [_key, { page, searchedText }] = queryKey as [
+    string,
+    {
+      page: number;
+      searchedText: string;
+    },
+  ];
 
-	const convertPokemonsCall = (pokemonUrl: string) => {
-		return getApiInstanceNoUrl().get<any>(pokemonUrl);
-	};
+  const searchPokemons = async (searchText: string) => {
+    let returnArray: any[] = [];
+    const searchedPokemon = await getApiInstance().get<any>(
+      `/pokemon/${searchText}`,
+    );
+    returnArray.push(searchedPokemon);
 
-	const convertPokemons = async () => {
-		let pokemonsArrayScope: any[] = [];
-		const pokemonsBefore = await getPokemons();
+    return returnArray;
+  };
 
-		const firstResponse = await pokemonsBefore.data.results.map(
-			async (pokemon: IResults) => {
-				const pokemonAfter = await convertPokemonsCall(pokemon.url);
-				console.log(pokemonAfter);
-				pokemonsArrayScope.push(pokemonAfter);
-			}
-		);
-		console.log(await Promise.all(firstResponse));
-		console.log(pokemonsArrayScope);
-		return pokemonsArrayScope;
-	};
+  //usunac funcje zeby zapytania robic prosto do apiInstance
+  const getPokemons = (page: number) => {
+    return getApiInstance().get(`/pokemon?limit=50&offset=${page}`);
+  };
 
-	const response: Promise<any[]> = convertPokemons();
+  const getTypeFn = (type: string) => {
+    return getApiInstance().get(`/type/${type}`);
+  };
 
-	return await response;
+  const convertPokemonsCall = (pokemonUrl: string) => {
+    return getApiInstanceNoUrl().get<any>(pokemonUrl);
+  };
+
+  const convertPokemons = async (pokemonList: any) => {
+    let pokemonsArrayScope: any[] = [];
+    const pokemonsBefore = pokemonList;
+
+    const firstResponse = await pokemonsBefore.data.results.map(
+      async (pokemon: IResults) => {
+        const pokemonAfter = await convertPokemonsCall(pokemon.url);
+
+        pokemonsArrayScope.push(pokemonAfter);
+      },
+    );
+
+    await Promise.all(firstResponse);
+    console.log(firstResponse);
+    console.log(pokemonsArrayScope);
+    return pokemonsArrayScope;
+  };
+
+  const convertPokemonsType = async (pokemonList: any) => {
+    let pokemonsArrayScope: any[] = [];
+    const pokemonsBefore = pokemonList;
+
+    const firstResponse = await pokemonsBefore.data.pokemon.map(
+      async (pokemon: IResults) => {
+        const pokemonAfter = await convertPokemonsCall(pokemon.url);
+        pokemonsArrayScope.push(pokemonAfter);
+      },
+    );
+
+    await Promise.all(firstResponse);
+
+    return pokemonsArrayScope;
+  };
+
+  if (searchedText) {
+    const response = searchPokemons(searchedText);
+
+    return response;
+  }
+
+  const pokemonsListBefore = await getPokemons(page);
+
+  const response: Promise<any[]> = convertPokemons(pokemonsListBefore);
+
+  return await response;
 };
 
-export const usePokemonsQuery = (options: any = {}) => {
-	return useQuery<Array<IPokemonDto>>("Pokemons", usePokemonsQuerry, {
-		...options,
-	});
+export const usePokemonsQuery = (page = 0, searchedText = "") => {
+  return useQuery<Array<IPokemonDto>>(
+    ["Pokemons", { page, searchedText }],
+    usePokemonsQuerry,
+  );
 };

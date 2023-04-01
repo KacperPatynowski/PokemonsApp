@@ -1,3 +1,5 @@
+/** @format */
+
 import {
   Air as AirIcon,
   AutoAwesome as AutoAwesomeIcon,
@@ -20,20 +22,16 @@ import {
   Warning as WarningIcon,
   Water as WaterIcon,
 } from "@mui/icons-material";
-import { Box } from "@mui/material";
-import Paper from "@mui/material/Paper";
-import { PokemonsContext, usePokemons } from "components/PokemonContext";
-import { PokemonEvolution } from "components/PokemonEvolution";
-import * as React from "react";
-import { usePokemonsQuery } from "services/api/usePokemonsQuery";
+import { Box, Checkbox, Chip, FormControlLabel } from "@mui/material";
+
+import { PokemonCard } from "components/PokemonCard";
+import { usePokemons } from "components/PokemonContext";
+
 import { IPokemonDto } from "types/IPokemonDto";
 
-export default function OddTable() {
-  const [page, setPage] = React.useState(0);
-
+export default function PokemonsTable() {
   const response = usePokemons();
-
-  const handleClick = () => {};
+  console.log(response);
 
   const iconSelect = (type: string) => {
     const typeToIcon = {
@@ -63,53 +61,22 @@ export default function OddTable() {
 
   if (response) {
     return (
-      <div className="">
-        <Paper sx={{ width: "100%", overflow: "hidden", align: "center" }}>
-          <Box sx={{ margin: "auto" }}>
-            <div className="flex flex-col gap-2 justify-center items-center">
-              {response.map(({ data }: IPokemonDto) => {
-                const { id, name, sprites, types } = data || {};
+      <Box sx={{ margin: "auto", height: "100%" }}>
+        <div className="flex flex-col gap-1 justify-center items-center ">
+          {response.map(({ data }: IPokemonDto, index: number) => {
+            const { id, name, sprites, types } = data || {};
 
-                return (
-                  <>
-                    <div
-                      className="hover:[transform:rotateY(180deg)] [transform-style:preserve-3d] [transition:all] [transition:ease] [transition:0.5s]"
-                      id="front"
-                    >
-                      <div className="card w-96 bg-red-100 shadow-xl">
-                        <span className="m-4 text-base font-mono">{id}</span>
-                        <figure>
-                          <img
-                            src={sprites?.front_default}
-                            alt="Shoes"
-                            className="w-36 h-36"
-                          />
-                        </figure>
-                        <div className="card-body items-center text-center">
-                          <h2 className="card-title ">{name}</h2>
-                          <div className="m-4">
-                            {types?.map((type) => {
-                              return iconSelect(type.type.name);
-                            })}
-                          </div>
-
-                          <div className="card-actions justify-end">
-                            <button className="btn btn-primary">Compare</button>
-                            <button className="btn btn-primary">Evolves</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="">
-                      <PokemonEvolution pokemonId={id!} />
-                    </div>
-                  </>
-                );
-              })}
-            </div>
-          </Box>
-        </Paper>
-      </div>
+            return (
+              <div
+                key={index}
+                className="w-96 mx-6 [height:30rem] relative flex justify-center items-center"
+              >
+                <PokemonCard data={data} key={id} />
+              </div>
+            );
+          })}
+        </div>
+      </Box>
     );
   } else return <p>refresh</p>;
 }

@@ -1,3 +1,5 @@
+/** @format */
+
 import { Box } from "@mui/material";
 import { PokemonStatsCard } from "components/PokemonStatsCard";
 import React, { ReactElement, useEffect } from "react";
@@ -17,12 +19,12 @@ export const PokemonEvolution = ({ pokemonId, buttonMessage }: IProps) => {
 
     if (response) {
       pokemonsArray = [
-        response!.data.chain.species?.name ?? "",
-        response!.data.chain.evolves_to[0]?.species?.name ?? "",
+        response.data.chain.species?.name ?? "",
+        response.data.chain.evolves_to[0]?.species?.name ?? "",
       ];
-      if (response!.data.chain.evolves_to[0]?.evolves_to[0]?.species?.name) {
+      if (response.data.chain.evolves_to[0]?.evolves_to[0]?.species?.name) {
         pokemonsArray.push(
-          response!.data.chain.evolves_to[0]?.evolves_to[0]?.species?.name
+          response!.data.chain.evolves_to[0]?.evolves_to[0]?.species?.name,
         );
       }
     }
@@ -37,8 +39,8 @@ export const PokemonEvolution = ({ pokemonId, buttonMessage }: IProps) => {
   return (
     <>
       <Box className="bg-white flex justify-center">
-        {pokemonsResponse?.map((pokemon) => {
-          return <PokemonStatsCard pokemon={pokemon} />;
+        {pokemonsResponse?.map((pokemon, index) => {
+          return <PokemonStatsCard pokemon={pokemon} key={index} />;
         })}
       </Box>
     </>

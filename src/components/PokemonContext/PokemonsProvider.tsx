@@ -1,11 +1,6 @@
-import {
-  createContext,
-  FC,
-  ReactNode,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+/** @format */
+
+import { createContext, FC, ReactNode, useContext, useState ,useMemo} from "react";
 import { usePokemonsQuery } from "services/api/usePokemonsQuery";
 
 interface IProps {
