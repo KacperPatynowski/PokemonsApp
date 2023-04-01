@@ -1,5 +1,5 @@
 export const routes = {
-	modal: "/signup",
+	signup: "/signup",
 	pokemonTable: "/pokemons",
 	pokemonCompare: "/compare/:firstpokemon&:secondpokemon",
 	pokemonEvolution: "/evolution/:id",
