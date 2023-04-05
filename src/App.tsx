@@ -4,7 +4,7 @@ import "./App.css";
 
 import { CssBaseline } from "@mui/material";
 import NewTable from "components/NewTable/NewTable";
-import PokemonsTable from "components/OddTable/OddTable";
+import { PokemonsTable } from "components/OddTable/PokemonsTable";
 import { PokemonsProvider } from "components/PokemonContext";
 import { PokemonsPage } from "pages/PokemonsPage";
 import React, { useContext, useEffect, useState } from "react";
@@ -22,50 +22,21 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
 const App = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  // const { data: response } = usePokemonsQuery();
-  // const PokemonContext = React.createContext(response);
-
-  useEffect(() => {
-    setInterval(() => setIsOpen(!isOpen), 1);
-  }, []);
-
-  //
-
-  const { data: starterResponse } = useStarterPokemons();
-
-  const regionNames = [
-    "Kanto",
-    "Johto",
-    "Hoenn",
-    "Sinnoh",
-    "Hisui",
-    "Unova",
-    "Kalos",
-    "Alola",
-    "Galar",
-    "Paldea",
-  ];
-
-  // const context = useContext(PokemonsProvider.)
-
   return (
     <>
-      <div className="w-screen h-screen">
-        <PokemonsProvider>
-          <React.StrictMode>
-            <BrowserRouter>
-              <CssBaseline />
-              <Routes>
-                <Route path={routes.signup} element={<SignUp />} />
-                <Route path={routes.pokemonTable} element={<PokemonsPage />} />
-              </Routes>
-            </BrowserRouter>
-          </React.StrictMode>
-        </PokemonsProvider>
-      </div>
+      <PokemonsProvider>
+        <React.StrictMode>
+          <BrowserRouter>
+            <CssBaseline />
+            <Routes>
+              <Route path={routes.signup} element={<SignUp />} />
+              <Route path={routes.pokemonTable} element={<PokemonsPage />} />
+            </Routes>
+          </BrowserRouter>
+        </React.StrictMode>
+      </PokemonsProvider>
     </>
   );
 };

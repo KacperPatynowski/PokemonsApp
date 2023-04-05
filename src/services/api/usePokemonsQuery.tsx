@@ -38,7 +38,7 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
 
   //usunac funcje zeby zapytania robic prosto do apiInstance
   const getPokemons = (page: number) => {
-    return getApiInstance().get(`/pokemon?limit=50&offset=${page}`);
+    return getApiInstance().get(`/pokemon?limit=10&offset=${page}`);
   };
 
   const getTypeFn = (type: string) => {
@@ -62,8 +62,7 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
     );
 
     await Promise.all(firstResponse);
-    console.log(firstResponse);
-    console.log(pokemonsArrayScope);
+
     return pokemonsArrayScope;
   };
 

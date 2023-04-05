@@ -1,24 +1,25 @@
+/** @format */
+
 import "./index.css";
 
-import { PokemonsProvider } from "components/PokemonContext";
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 import App from "./App";
+import { Paper } from "@mui/material";
 
 export * from "./App";
 
 const root = ReactDOM.createRoot(
-	document.getElementById("root") as HTMLElement
+  document.getElementById("root") as HTMLElement,
 );
 
 const queryClient = new QueryClient();
 
 root.render(
-	<QueryClientProvider client={queryClient}>
-		<PokemonsProvider>
-			<App />
-		</PokemonsProvider>
-	</QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <div className="w-screen ">
+      <App />
+    </div>
+  </QueryClientProvider>,
 );

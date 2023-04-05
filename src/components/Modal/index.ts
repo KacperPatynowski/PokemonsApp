@@ -1,1 +1,3 @@
-export * from "./Modal";
+/** @format */
+
+export * from "./SignUp";

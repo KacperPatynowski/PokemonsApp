@@ -1,45 +1,40 @@
 /** @format */
 
 import { Box } from "@mui/material";
-import { useEffect } from "react";
-import { RadialAreaChart, RadialAxis } from "reaviz";
+import { ReactNode, useEffect } from "react";
+import {
+  RadialArea,
+  RadialAreaChart,
+  RadialAreaSeries,
+  RadialAxis,
+  RadialAxisArcSeries,
+  RadialAxisTick,
+  RadialAxisTickLabel,
+  RadialAxisTickLine,
+  RadialAxisTickSeries,
+  RadialGradient,
+} from "reaviz";
+import { IPokemonDto } from "types/IPokemonDto";
 
-export const PokemonStatsCard = (pokemon: any) => {
-  const categoryData: Array<any> = [
-    {
-      id: "1",
-      key: "hp",
-      data: pokemon?.pokemon.data?.stats[0]?.base_stat ?? "0",
-    },
-    {
-      id: "2",
-      key: "attack",
-      data: pokemon?.pokemon.data?.stats[1]?.base_stat ?? "0",
-    },
-    {
-      id: "3",
-      key: "defense",
-      data: pokemon?.pokemon.data?.stats[2]?.base_stat ?? "0",
-    },
-    {
-      id: "4",
-      key: "special-attack",
-      data: pokemon?.pokemon.data?.stats[3]?.base_stat ?? "0",
-    },
-    {
-      id: "5",
-      key: "special-defense",
-      data: pokemon?.pokemon.data?.stats[4]?.base_stat ?? "0",
-    },
-    {
-      id: "6",
-      key: "speed",
-      data: pokemon?.pokemon.data!.stats[5].base_stat ?? "0",
-    },
-  ];
+interface IData {
+  id: string;
+  key: string;
+  data: string;
+}
 
-  const pokemonImg = pokemon?.pokemon.data?.sprites?.front_default ?? "";
+interface IProps {
+  pokemon: IPokemonDto;
+  name: string;
+  pokemonImg: string;
+  pokemonStatsData: IData[];
+}
 
+export const PokemonStatsCard = ({
+  name,
+  pokemonImg,
+  pokemon,
+  pokemonStatsData,
+}: IProps) => {
   return (
     <>
       <div className="card w-96 bg-gray-100 shadow-xl m-2">
@@ -48,17 +43,17 @@ export const PokemonStatsCard = (pokemon: any) => {
         </figure>
         <div className="card-body flex justify-center pt-0">
           <Box className="flex flex-col justify-center items-center">
-            <h2 className="card-title justify-center m-2">
-              {pokemon.pokemon.data!.name}
-            </h2>
+            <h2 className="card-title justify-center m-2">{name}</h2>
 
             <div className="relative">
-              <RadialAreaChart
-                data={categoryData}
-                height={300}
-                width={350}
-                axis={<RadialAxis type="category" />}
-              />
+              <>
+                <RadialAreaChart
+                  data={pokemonStatsData}
+                  height={300}
+                  width={350}
+                  axis={<RadialAxis type="category" />}
+                />
+              </>
             </div>
           </Box>
         </div>

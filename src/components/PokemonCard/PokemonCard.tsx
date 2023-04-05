@@ -5,7 +5,6 @@ import {
   AutoAwesome as AutoAwesomeIcon,
   Bolt as BoltIcon,
   Brightness5 as Brightness5Icon,
-  CheckBox,
   FilterDrama as FilterDramaIcon,
   FilterHdr as FilterHdrIcon,
   FilterVintage as FilterVintageIcon,
@@ -63,17 +62,24 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
 
   const { id, name, sprites, types } = data || {};
 
-  // hover:[transform:rotateY(180deg)] [transform-style:preserve-3d] [transition:all] [transition:ease] [transition:0.5s]
-  // [transition:all] [transition:ease] [transition:0.5s]
   return (
     <>
-      <div className="absolute flex flex-col justify-center items-center">
+      <div className="flex flex-col justify-center items-center">
         {/* container */}
-        <div className="h-full m-6 flex justify-center flex-col items-center">
+        <div
+          id="container"
+          className="h-full m-6 flex justify-center flex-col items-center"
+        >
           {/* the card */}
-          <div className="hover:[transform:rotateY(180deg)] [transform-style:preserve-3d] transition-all delay-300 duration-500 ease w-full flex flex-col justify-center items-center ">
+          <div
+            id="card"
+            className="hover:[transform:rotateY(180deg)] [transform-style:preserve-3d] transition-all delay-300 duration-500 ease w-full flex flex-col justify-center items-center "
+          >
             {/* front */}
-            <div className="card w-96 bg-gray-100 shadow-xl  [backface-visibility:hidden] ">
+            <div
+              id="front"
+              className="card w-96 bg-gray-100 shadow-xl  [backface-visibility:hidden] "
+            >
               <span className="m-4 text-base font-mono">{id}</span>
               <figure>
                 <img
@@ -92,16 +98,12 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
               </div>
             </div>
             {/* back */}
-            <div className="[backface-visibility:hidden] [transform:rotateY(180deg)] w-full h-full absolute top-0 ">
+            <div
+              id="back"
+              className="[backface-visibility:hidden] [transform:rotateY(180deg)] w-full h-full absolute "
+            >
               <PokemonEvolution pokemonId={data!.id} />
             </div>
-          </div>
-          <div className="rounded-3xl m-2 w-40 [background-color:rgba(0,0,0,0.08)] flex justify-center items-center  ">
-            <FormControlLabel
-              control={<Checkbox />}
-              label="Compare"
-              className="mr-0"
-            />
           </div>
         </div>
       </div>

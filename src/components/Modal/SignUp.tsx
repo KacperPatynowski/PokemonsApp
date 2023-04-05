@@ -13,7 +13,7 @@ import { useStarterPokemons } from "services/api/useStarterPokemons";
 /** @jsxImportSource @emotion/react */
 
 export const SignUp = () => {
-  const { data: response } = useStarterPokemons();
+  const { data: response, isLoading: loadingPokemons } = useStarterPokemons();
   const [activePokemon, setActivePokemon] = useState(0);
   const [activeClass, setActiveClass] = useState(false);
 
@@ -30,23 +30,17 @@ export const SignUp = () => {
     "Paldea",
   ];
 
-  interface IProfile {
-    name: string;
-    region: string;
-    pokemonName: string;
-  }
-
   const initValues = {
     name: "",
     region: "",
     pokemon: "",
   };
-  if (response) {
+  if (!loadingPokemons && response) {
     return (
       <>
-        <Box>
-          <div className="flex justify-center">
-            <Artboard size={3} horizontal className=" artboard-demo m-8">
+        <div className="w-screen h-screen">
+          <div className="flex justify-center items-center w-full h-full ">
+            <div className="w-8/12 h-1/2 shadow-lg rounded-2xl ring-2">
               <Box className="flex justify-center">
                 <Formik
                   initialValues={initValues}
@@ -106,8 +100,9 @@ export const SignUp = () => {
 
                         <FormGroup className="m-auto">
                           <Label className="text-center">
-                            Twój startowy pokemon
+                            <div className="mb-2">Twój startowy pokemon</div>
                           </Label>
+
                           <div className="tabs tabs-boxed  w-full ">
                             <a
                               className={`tab h-32 ${
@@ -116,7 +111,7 @@ export const SignUp = () => {
                                   : ""
                               }`}
                               id="1"
-                              onClick={(event) => {
+                              onClick={() => {
                                 setActiveClass(true);
                                 setActivePokemon(1);
 
@@ -188,9 +183,9 @@ export const SignUp = () => {
                   )}
                 </Formik>
               </Box>
-            </Artboard>
+            </div>
           </div>
-        </Box>
+        </div>
       </>
     );
   } else {

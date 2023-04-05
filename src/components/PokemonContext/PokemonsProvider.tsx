@@ -1,24 +1,29 @@
 /** @format */
 
-import { createContext, FC, ReactNode, useContext, useState ,useMemo} from "react";
+import {
+  createContext,
+  FC,
+  ReactNode,
+  useContext,
+  useState,
+  useMemo,
+} from "react";
 import { usePokemonsQuery } from "services/api/usePokemonsQuery";
-
-interface IProps {
-  children?: any;
-}
+import { useStarterPokemons } from "services/api/useStarterPokemons";
 
 export const PokemonsContext = createContext({} as any);
 export const usePokemons = () => {
   return useContext(PokemonsContext);
 };
 
-export const PokemonsProvider = ({ children }: IProps) => {
-  const pokemonsContext = usePokemons();
-  const pokemons6 = useContext(PokemonsContext);
+export const PokemonsProvider = ({ children }: any) => {
+  const { data: pokemonsQueryResponse } = usePokemonsQuery();
 
-  const { data: response } = usePokemonsQuery();
+  const value = useMemo(() => {
+    return { pokemonsQueryResponse };
+  }, [pokemonsQueryResponse]);
 
-  const value = useMemo(() => response, [response]);
+  console.log(value);
 
   return (
     <PokemonsContext.Provider value={value}>

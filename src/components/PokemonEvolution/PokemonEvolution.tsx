@@ -2,7 +2,7 @@
 
 import { Box } from "@mui/material";
 import { PokemonStatsCard } from "components/PokemonStatsCard";
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { usePokemonEvolution } from "services/api/usePokemonEvolutionQuery";
 import { usePokemonsStatsQuery } from "services/api/usePokemonsStatsQuery";
 import { IPokemonDto } from "types/IPokemonDto";
@@ -13,36 +13,95 @@ interface IProps {
 }
 
 export const PokemonEvolution = ({ pokemonId, buttonMessage }: IProps) => {
-  const { data: response } = usePokemonEvolution(pokemonId);
-  const getPoekmonsArray = () => {
-    let pokemonsArray: Array<any> = [];
+  const {
+    data: response,
+    isLoading,
+    isSuccess,
+  } = usePokemonEvolution(pokemonId);
 
-    if (response) {
+  const [pokemonsArray, setPokemonsArray] = useState<Array<any>>([]);
+
+  useEffect(() => {
+    const getPoekmonsArray = () => {
+      let pokemonsArray: Array<any> = [];
+      const evolutionChain = response!.data.chain;
+
       pokemonsArray = [
-        response.data.chain.species?.name ?? "",
-        response.data.chain.evolves_to[0]?.species?.name ?? "",
+        evolutionChain.species.name ?? "",
+        evolutionChain.evolves_to[0].species.name ?? "",
       ];
-      if (response.data.chain.evolves_to[0]?.evolves_to[0]?.species?.name) {
+      if (evolutionChain.evolves_to[0].evolves_to[0].species.name) {
         pokemonsArray.push(
-          response!.data.chain.evolves_to[0]?.evolves_to[0]?.species?.name,
+          evolutionChain.evolves_to[0].evolves_to[0].species.name,
         );
       }
+
+      return pokemonsArray;
+    };
+
+    if (isSuccess) {
+      const array = getPoekmonsArray();
+      setPokemonsArray(array);
     }
+  }, [response, isSuccess]);
 
-    return pokemonsArray;
-  };
+  const { data: pokemonsResponse, isLoading: statsLoading } =
+    usePokemonsStatsQuery(pokemonsArray);
 
-  const pokemonsArray = getPoekmonsArray();
+  if (pokemonsResponse === undefined) {
+    return <div>Loading...</div>;
+  } else {
+    return (
+      <>
+        <Box className=" flex justify-center">
+          {pokemonsResponse?.map((pokemon, index) => {
+            const categoryData: Array<any> = [
+              {
+                id: "1",
+                key: "hp",
+                data: pokemon.data.stats[0].base_stat ?? "0",
+              },
+              {
+                id: "2",
+                key: "attack",
+                data: pokemon.data.stats[1].base_stat ?? "0",
+              },
+              {
+                id: "3",
+                key: "defense",
+                data: pokemon.data.stats[2].base_stat ?? "0",
+              },
+              {
+                id: "4",
+                key: "special-attack",
+                data: pokemon.data.stats[3].base_stat ?? "0",
+              },
+              {
+                id: "5",
+                key: "special-defense",
+                data: pokemon.data.stats[4].base_stat ?? "0",
+              },
+              {
+                id: "6",
+                key: "speed",
+                data: pokemon.data.stats[5].base_stat ?? "0",
+              },
+            ];
 
-  const { data: pokemonsResponse } = usePokemonsStatsQuery(pokemonsArray);
-
-  return (
-    <>
-      <Box className="bg-white flex justify-center">
-        {pokemonsResponse?.map((pokemon, index) => {
-          return <PokemonStatsCard pokemon={pokemon} key={index} />;
-        })}
-      </Box>
-    </>
-  );
+            return (
+              <div>
+                <PokemonStatsCard
+                  pokemonStatsData={categoryData}
+                  pokemon={pokemon}
+                  pokemonImg={pokemon.data.sprites.front_default}
+                  name={pokemon.data.name}
+                  key={index}
+                />
+              </div>
+            );
+          })}
+        </Box>
+      </>
+    );
+  }
 };
