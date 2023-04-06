@@ -95,7 +95,7 @@ export const PokemonsTable = () => {
                 key={index}
                 className="w-96 [height:30rem] relative flex justify-center items-center flex-col"
               >
-                <div className="m-auto w-96 [height:30rem] hover:-translate-y-20 transition-all">
+                <div className="m-auto w-96 [height:30rem] ">
                   <PokemonCard data={data} key={id} />
                 </div>
                 <div className="rounded-3xl m-2 w-40 [background-color:rgba(0,0,0,0.08)] flex justify-center items-center">

@@ -22,7 +22,7 @@ import {
   Warning as WarningIcon,
   Water as WaterIcon,
 } from "@mui/icons-material";
-import { Checkbox, Chip, FormControlLabel } from "@mui/material";
+import { Checkbox, Chip, FormControlLabel, Typography } from "@mui/material";
 import { PokemonEvolution } from "components/PokemonEvolution";
 import { IPokemonDto } from "types/IPokemonDto";
 
@@ -68,19 +68,32 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
         {/* container */}
         <div
           id="container"
-          className="h-full m-6 flex justify-center flex-col items-center"
+          className="h-full m-6 flex justify-center flex-col items-center hover:-translate-y-20 transition-all"
         >
           {/* the card */}
           <div
             id="card"
-            className="hover:[transform:rotateY(180deg)] [transform-style:preserve-3d] transition-all delay-300 duration-500 ease w-full flex flex-col justify-center items-center "
+            className="hover:[transform:rotateY(180deg)] [transform-style:preserve-3d]  transition-all delay-300 duration-500 ease w-full flex flex-col justify-center items-center "
           >
             {/* front */}
             <div
               id="front"
               className="card w-96 bg-gray-100 shadow-xl  [backface-visibility:hidden] "
             >
-              <span className="m-4 text-base font-mono">{id}</span>
+              <div className="flex flex-row">
+                {/* <span className="m-4 text-base font-mono self-start">{id}</span> */}
+
+                <Typography
+                  // align="center"
+                  sx={{
+                    margin: "1rem auto 0",
+
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  Flip Card
+                </Typography>
+              </div>
               <figure>
                 <img
                   src={sprites?.front_default}

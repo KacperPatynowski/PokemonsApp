@@ -18,7 +18,7 @@ const queryClient = new QueryClient();
 
 root.render(
   <QueryClientProvider client={queryClient}>
-    <div className="w-screen ">
+    <div className="w-screen h-full ">
       <App />
     </div>
   </QueryClientProvider>,

@@ -38,7 +38,7 @@ export const SignUp = () => {
   if (!loadingPokemons && response) {
     return (
       <>
-        <div className="w-screen h-screen">
+        <div className="">
           <div className="flex justify-center items-center w-full h-full ">
             <div className="w-8/12 h-1/2 shadow-lg rounded-2xl ring-2">
               <Box className="flex justify-center">
