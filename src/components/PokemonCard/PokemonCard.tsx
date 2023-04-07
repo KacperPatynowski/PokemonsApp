@@ -68,12 +68,13 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
         {/* container */}
         <div
           id="container"
-          className="h-full m-6 flex justify-center flex-col items-center hover:-translate-y-20 transition-all"
+          className="h-full m-6 flex justify-center flex-col items-center "
         >
           {/* the card */}
+          {/* hover:[transform:rotateY(180deg)] [transform-style:preserve-3d]  transition-all delay-300 duration-500 ease | hover:-translate-y-20 transition-all */}
           <div
             id="card"
-            className="hover:[transform:rotateY(180deg)] [transform-style:preserve-3d]  transition-all delay-300 duration-500 ease w-full flex flex-col justify-center items-center "
+            className=" w-full flex flex-col justify-center items-center "
           >
             {/* front */}
             <div
@@ -82,16 +83,20 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
             >
               <div className="flex flex-row">
                 {/* <span className="m-4 text-base font-mono self-start">{id}</span> */}
-
                 <Typography
                   // align="center"
                   sx={{
                     margin: "1rem auto 0",
-
+                    fontWeight: "bold",
+                    opacity: 0.4,
                     whiteSpace: "nowrap",
                   }}
                 >
-                  Flip Card
+                  <button>
+                    <span className="duration-300 after:[content:''_absolute_w-full_height-px_opacity-0] transition-opacity">
+                      Flip Card
+                    </span>
+                  </button>
                 </Typography>
               </div>
               <figure>
