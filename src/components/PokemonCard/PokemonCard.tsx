@@ -24,9 +24,17 @@ import {
 } from "@mui/icons-material";
 import { Checkbox, Chip, FormControlLabel, Typography } from "@mui/material";
 import { PokemonEvolution } from "components/PokemonEvolution";
+import { PokemonStatsCard } from "components/PokemonStatsCard";
+import { useEffect, useState } from "react";
 import { IPokemonDto } from "types/IPokemonDto";
 
 export const PokemonCard = ({ data }: IPokemonDto) => {
+  const [addState, setAddState] = useState(false);
+
+  useEffect(() => {
+    console.log(addState);
+  }, [addState]);
+
   const iconSelect = (type: string, key: number) => {
     const typeToIcon = {
       normal: <NatureIcon />,
@@ -68,13 +76,19 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
         {/* container */}
         <div
           id="container"
-          className="h-full m-6 flex justify-center flex-col items-center "
+          className={`h-full m-6 flex justify-center flex-col items-center ${
+            addState ? "-translate-y-20 transition-all" : ""
+          }`}
         >
           {/* the card */}
-          {/* hover:[transform:rotateY(180deg)] [transform-style:preserve-3d]  transition-all delay-300 duration-500 ease | hover:-translate-y-20 transition-all */}
+
           <div
             id="card"
-            className=" w-full flex flex-col justify-center items-center "
+            className={` w-full flex flex-col justify-center items-center ${
+              addState
+                ? "[transform:rotateY(180deg)] [transform-style:preserve-3d]  transition-all delay-300 duration-500 ease "
+                : ""
+            }`}
           >
             {/* front */}
             <div
@@ -82,31 +96,31 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
               className="card w-96 bg-gray-100 shadow-xl  [backface-visibility:hidden] "
             >
               <div className="flex flex-row">
-                {/* <span className="m-4 text-base font-mono self-start">{id}</span> */}
                 <Typography
                   // align="center"
                   sx={{
                     margin: "1rem auto 0",
                     fontWeight: "bold",
-                    opacity: 0.4,
+                    opacity: 0.7,
                     whiteSpace: "nowrap",
                   }}
                 >
-                  <button>
-                    <span className="duration-300 after:[content:''_absolute_w-full_height-px_opacity-0] transition-opacity">
-                      Flip Card
-                    </span>
-                  </button>
+                  <a
+                    className="relative my-link cursor-pointer"
+                    onClick={() => setAddState(true)}
+                  >
+                    Flip Card
+                  </a>
                 </Typography>
               </div>
               <figure>
                 <img
-                  src={sprites?.front_default}
+                  src={sprites.other.dream_world.front_default}
                   alt="pokemon"
-                  className="w-36 h-36"
+                  className="w-32 h-32 m-4 "
                 />
               </figure>
-              <div className="card-body items-center text-center">
+              <div className="card-body items-center text-center p-4">
                 <h2 className="card-title ">{name}</h2>
                 <div className="m-4">
                   {types?.map((type, index) => {
@@ -120,7 +134,7 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
               id="back"
               className="[backface-visibility:hidden] [transform:rotateY(180deg)] w-full h-full absolute "
             >
-              <PokemonEvolution pokemonId={data!.id} />
+              <PokemonStatsCard pokemonId={id} />
             </div>
           </div>
         </div>

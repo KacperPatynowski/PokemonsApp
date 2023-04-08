@@ -90,13 +90,7 @@ export const PokemonEvolution = ({ pokemonId, buttonMessage }: IProps) => {
 
             return (
               <div>
-                <PokemonStatsCard
-                  pokemonStatsData={categoryData}
-                  pokemon={pokemon}
-                  pokemonImg={pokemon.data.sprites.front_default}
-                  name={pokemon.data.name}
-                  key={index}
-                />
+                <PokemonStatsCard pokemonId={pokemon.data.id} />
               </div>
             );
           })}
