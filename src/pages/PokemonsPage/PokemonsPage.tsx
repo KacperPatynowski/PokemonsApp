@@ -10,13 +10,7 @@ export const PokemonsPage = () => {
   return (
     <>
       <Header />
-      <div className="flex justify-center items-center">
-        <SearchInput
-          placeholder="Search"
-          size="md"
-          onChange={() => console.log("xd")}
-        />
-      </div>
+      
       <PokemonsTable />
     </>
   );

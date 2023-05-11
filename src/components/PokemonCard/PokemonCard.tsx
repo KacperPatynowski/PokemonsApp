@@ -72,12 +72,12 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center">
+      <div className="flex flex-col justify-center items-center mt-12">
         {/* container */}
         <div
           id="container"
           className={`h-full m-6 flex justify-center flex-col items-center ${
-            addState ? "-translate-y-20 transition-all" : ""
+            addState ? "-translate-y-14 transition-all" : ""
           }`}
         >
           {/* the card */}
@@ -132,7 +132,7 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
             {/* back */}
             <div
               id="back"
-              className="[backface-visibility:hidden] [transform:rotateY(180deg)] w-full h-full absolute "
+              className="[backface-visibility:hidden] [transform:rotateY(180deg)] w-full h-full absolute flex flex-row justify-center items-center "
             >
               <PokemonStatsCard pokemonId={id} />
             </div>

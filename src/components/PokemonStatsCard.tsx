@@ -48,7 +48,7 @@ export const PokemonStatsCard = ({ pokemonId }: IProps) => {
       ];
       if (evolutionChain.evolves_to[0].evolves_to[0].species.name) {
         pokemonsArray.push(
-          evolutionChain.evolves_to[0].evolves_to[0].species.name,
+          evolutionChain.evolves_to[0].evolves_to[0].species.name
         );
       }
 
@@ -106,7 +106,7 @@ export const PokemonStatsCard = ({ pokemonId }: IProps) => {
         return (
           <div>
             <>
-              <div className="card w-96 bg-gray-100 shadow-xl m-2">
+              <div className="card w-96 bg-gray-100 shadow-xl m-2 mt-12">
                 <figure className="mt-4">
                   <img src={pokemonImg} alt="pokemon" className="w-36 h-36" />
                 </figure>
