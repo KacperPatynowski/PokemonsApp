@@ -26,9 +26,14 @@ import {
   Box,
   Checkbox,
   Chip,
+  FormControl,
   FormControlLabel,
   Input,
+  InputLabel,
+  MenuItem,
   Select,
+  SelectChangeEvent,
+  TextField,
 } from "@mui/material";
 import { CompareButton } from "components/CompareButton";
 import { FormGroup, Label } from "reactstrap";
@@ -37,26 +42,36 @@ import { PokemonCard } from "components/PokemonCard";
 import { usePokemons } from "components/PokemonContext";
 import { PokemonEvolution } from "components/PokemonEvolution";
 import { SearchInput } from "components/SearchInput";
-import { Field, Form, Formik } from "formik";
-import { useEffect, useState } from "react";
+import { Field, Form, Formik, useFormik, useFormikContext } from "formik";
+import { useEffect, useRef, useState } from "react";
 import { usePokemonEvolution } from "services/api/usePokemonEvolutionQuery";
 import { usePokemonsQuery } from "services/api/usePokemonsQuery";
 
 import { IPokemonDto } from "types/IPokemonDto";
 
+interface IFormikValues {
+  values: { name: string; region: string; generation: string };
+}
+
 export const PokemonsTable = () => {
   const [selectedPokemonIds, setSelectedPokemonIds] = useState<number[]>([]);
   const [searchedText, setSearchedText] = useState("");
+  // const [region, setRegion] = useState("");
+  // const { values, submitForm } = useFormikContext<IFormikValues>();
 
   useEffect(() => {
     console.log("checkedIds", selectedPokemonIds);
   }, [selectedPokemonIds]);
 
+  // useEffect(() => {
+  //   console.log(values.values.region);
+  // }, [values.values.region]);
+
   const handlePokemonSelection = (pokemonId: number) => {
     console.log(pokemonId, selectedPokemonIds);
     if (selectedPokemonIds.includes(pokemonId)) {
       setSelectedPokemonIds(
-        selectedPokemonIds.filter((id) => id !== pokemonId)
+        selectedPokemonIds.filter((id) => id !== pokemonId),
       );
     } else {
       setSelectedPokemonIds([...selectedPokemonIds, pokemonId]);
@@ -91,19 +106,20 @@ export const PokemonsTable = () => {
     return typeToIcon[type as keyof typeof typeToIcon];
   };
 
-  const handleChange = (event: any) => {
-    console.log(event.target);
+  const handleChange = (event: SelectChangeEvent) => {
+    console.log(event.target.value);
     setSearchedText(event.target.value);
   };
 
   if (pokemonsQueryResponse) {
     const sortedPokemons = pokemonsQueryResponse.sort(
-      (a: IPokemonDto, b: IPokemonDto) => a.data.id - b.data.id
+      (a: IPokemonDto, b: IPokemonDto) => a.data.id - b.data.id,
     );
 
     const initValues = {
       name: "",
       region: "",
+      generation: "",
     };
 
     const regionNames = [
@@ -133,59 +149,123 @@ export const PokemonsTable = () => {
             >
               {(props) => (
                 <Form>
-                  <div className="text-center	">
-                    <FormGroup className="text-center m-2">
+                  <div className="shadow-xl rounded-box px-10">
+                    <div className="text-center	flex flex-row">
+                      <div className="mt-auto mx-4">
+                        <FormGroup className="text-center">
+                          <br />
+
+                          <Field
+                            name="name"
+                            placeholder="Wyszukaj pokemona"
+                            variant="outlined"
+                            type="text"
+                            id="name"
+                            component={TextField}
+                            value={props.values.name}
+                            onChange={props.handleChange}
+                            onBlur={props.handleBlur}
+                          />
+                        </FormGroup>
+                      </div>
+                      <FormGroup className="text-center">
+                        <div className="m-4">
+                          <Label htmlFor="name" className="text-center">
+                            Region z którego pochodzisz
+                          </Label>
+                        </div>
+
+                        <FormControl fullWidth>
+                          <InputLabel id="region-label">Region</InputLabel>
+                          <Field
+                            name="region"
+                            id="region"
+                            component={Select}
+                            // selected={props.values.region}
+                            labelId="region-label"
+                            onChange={(e: SelectChangeEvent) =>
+                              (props.values.region = e.target.value as string)
+                            }
+                            // (e: SelectChangeEvent) => {
+                            //   props.setFieldValue(
+                            //     props.values.region,
+                            //     e.target.value as string,
+                            //     false,
+                            //   );
+                            //   console.log(e.target.value as string);
+                            // }
+                            onBlur={props.handleBlur}
+                          >
+                            <MenuItem value="">Wybierz swój region</MenuItem>
+                            {regionNames.map((region) => {
+                              return (
+                                <MenuItem
+                                  value={region}
+                                  key={region}
+                                  id={region}
+                                >
+                                  {region}
+                                </MenuItem>
+                              );
+                            })}
+                          </Field>
+                        </FormControl>
+                      </FormGroup>
+                      <FormGroup className="text-center mx-4">
+                        <div className="m-4">
+                          <Label htmlFor="name" className="text-center p-4">
+                            Generacja
+                          </Label>
+                        </div>
+
+                        <FormControl fullWidth>
+                          <InputLabel id="generation-label">
+                            Generacja
+                          </InputLabel>
+                          <Field
+                            name="generation"
+                            id="generation"
+                            component={Select}
+                            // selected={props.values.region}
+                            labelId="generation-label"
+                            onChange={(e: SelectChangeEvent) =>
+                              (props.values.region = e.target.value as string)
+                            }
+                            // (e: SelectChangeEvent) => {
+                            //   props.setFieldValue(
+                            //     props.values.region,
+                            //     e.target.value as string,
+                            //     false,
+                            //   );
+                            //   console.log(e.target.value as string);
+                            // }
+                            onBlur={props.handleBlur}
+                          >
+                            <MenuItem value="">Wyszukaj po generacji</MenuItem>
+                            {regionNames.map((region) => {
+                              return (
+                                <MenuItem
+                                  value={region}
+                                  key={region}
+                                  id={region}
+                                >
+                                  {region}
+                                </MenuItem>
+                              );
+                            })}
+                          </Field>
+                        </FormControl>
+                      </FormGroup>
+
                       <br />
+                    </div>
 
-                      <Field
-                        name="name"
-                        placeholder="Nazwa trenera pokemon"
-                        type="text"
-                        id="name"
-                        component={Input}
-                        className="input input-bordered w-full max-w-xs "
-                        value={props.values.name}
-                        onChange={props.handleChange}
-                        onBlur={props.handleBlur}
-                      />
-                    </FormGroup>
-                    <FormGroup className="text-center">
-                      <Label htmlFor="name" className="text-center">
-                        Region z którego pochodzisz
-                      </Label>
-
-                      <br />
-
-                      <Field
-                        name="region"
-                        id="region"
-                        component={Select}
-                        className="input input-bordered w-full max-w-xs m-2"
-                        // value={props.values.region}
-                        onChange={(e: any) => {
-                          props.values.region = e;
-                        }}
-                        onBlur={props.handleBlur}
-                      >
-                        <option disabled selected>
-                          Wybierz swój region
-                        </option>
-                        {regionNames.map((region) => {
-                          return <option key={region}>{region}</option>;
-                        })}
-                      </Field>
-                    </FormGroup>
-
-                    <br />
+                    <div className="flex justify-center m-4"></div>
                   </div>
-
-                  <div className="flex justify-center m-4"></div>
                 </Form>
               )}
             </Formik>
           </Box>
-
-                        
         </div>
         <div className="flex flex-col gap-1 justify-center items-center ">
           {sortedPokemons.map(({ data }: IPokemonDto, index: number) => {

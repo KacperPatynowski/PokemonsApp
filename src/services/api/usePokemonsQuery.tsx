@@ -3,13 +3,14 @@
  * @jsxImportSource @emotion/react
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { QueryFunction, useQuery } from "react-query";
 import { IPokemonDto } from "types/IPokemonDto";
 
 import { getApiInstance } from "./getApiInstance";
 import { getApiInstanceNoUrl } from "./getApiInstanceNoUrl";
+import { useFormikContext } from "formik";
 
 /** @jsxImportSource @emotion/react */
 interface IResults {
@@ -25,6 +26,14 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
       searchedText: string;
     },
   ];
+
+  const { values, submitForm } = useFormikContext();
+
+  //<IFormikValues>
+
+  useEffect(() => {
+    console.log(values);
+  }, [values]);
 
   const searchPokemons = async (searchText: string) => {
     let returnArray: any[] = [];

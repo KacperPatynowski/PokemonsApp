@@ -1,10 +1,18 @@
 /** @format */
 
-import { Box } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  Input,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+} from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import React, { useRef, useState } from "react";
 import { useEffect } from "react";
-import { Artboard, Button, Input, Select } from "react-daisyui";
+import { Artboard, Button } from "react-daisyui";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { FormGroup, Label } from "reactstrap";
 import { routes } from "routes";
@@ -58,44 +66,62 @@ export const SignUp = () => {
                       <div className="text-center	">
                         <FormGroup className="text-center m-2">
                           <br />
-
-                          <Field
-                            name="name"
-                            placeholder="Nazwa trenera pokemon"
-                            type="text"
-                            id="name"
-                            component={Input}
-                            className="input input-bordered w-full max-w-xs "
-                            value={props.values.name}
-                            onChange={props.handleChange}
-                            onBlur={props.handleBlur}
-                          />
+                          <FormControl fullWidth>
+                            <Field
+                              name="name"
+                              placeholder="Nazwa trenera pokemon"
+                              type="text"
+                              id="name"
+                              component={Input}
+                              value={props.values.name}
+                              onChange={props.handleChange}
+                              onBlur={props.handleBlur}
+                              variant="outlined-basic"
+                            />
+                          </FormControl>
                         </FormGroup>
+
                         <FormGroup className="text-center">
                           <Label htmlFor="name" className="text-center">
                             Region z którego pochodzisz
                           </Label>
 
                           <br />
-
-                          <Field
-                            name="region"
-                            id="region"
-                            component={Select}
-                            className="input input-bordered w-full max-w-xs m-2"
-                            // value={props.values.region}
-                            onChange={(e: any) => {
-                              props.values.region = e;
-                            }}
-                            onBlur={props.handleBlur}
-                          >
-                            <option disabled selected>
-                              Wybierz swój region
-                            </option>
-                            {regionNames.map((region) => {
-                              return <option key={region}>{region}</option>;
-                            })}
-                          </Field>
+                          <FormControl fullWidth>
+                            <InputLabel id="region-label">Region</InputLabel>
+                            <Field
+                              name="region"
+                              id="region"
+                              component={Select}
+                              // selected={props.values.region}
+                              labelId="region-label"
+                              onChange={(e: SelectChangeEvent) =>
+                                (props.values.region = e.target.value as string)
+                              }
+                              // (e: SelectChangeEvent) => {
+                              //   props.setFieldValue(
+                              //     props.values.region,
+                              //     e.target.value as string,
+                              //     false,
+                              //   );
+                              //   console.log(e.target.value as string);
+                              // }
+                              onBlur={props.handleBlur}
+                            >
+                              <MenuItem value="">Wybierz swój region</MenuItem>
+                              {regionNames.map((region) => {
+                                return (
+                                  <MenuItem
+                                    value={region}
+                                    key={region}
+                                    id={region}
+                                  >
+                                    {region}
+                                  </MenuItem>
+                                );
+                              })}
+                            </Field>
+                          </FormControl>
                         </FormGroup>
 
                         <FormGroup className="m-auto">
