@@ -129,7 +129,7 @@ export const SignUp = () => {
                             <div className="mb-2">Twój startowy pokemon</div>
                           </Label>
 
-                          <div className="tabs tabs-boxed  w-full ">
+                          <div className="tabs tabs-boxed w-full bg-gray-100">
                             <a
                               className={`tab h-32 ${
                                 activeClass && activePokemon === 1

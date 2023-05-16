@@ -56,16 +56,19 @@ interface IFormikValues {
 export const PokemonsTable = () => {
   const [selectedPokemonIds, setSelectedPokemonIds] = useState<number[]>([]);
   const [searchedText, setSearchedText] = useState("");
-  // const [region, setRegion] = useState("");
-  // const { values, submitForm } = useFormikContext<IFormikValues>();
+  const [page, setPage] = useState(1);
+  const [generationState, setGenerationState] = useState("");
+  const [region, setRegion] = useState("");
 
   useEffect(() => {
     console.log("checkedIds", selectedPokemonIds);
   }, [selectedPokemonIds]);
 
-  // useEffect(() => {
-  //   console.log(values.values.region);
-  // }, [values.values.region]);
+  // const { values: generation } = useFormikContext<IFormikValues>();
+
+  useEffect(() => {
+    console.log(generationState);
+  }, [generationState]);
 
   const handlePokemonSelection = (pokemonId: number) => {
     console.log(pokemonId, selectedPokemonIds);
@@ -78,7 +81,7 @@ export const PokemonsTable = () => {
     }
   };
 
-  const { data: pokemonsQueryResponse } = usePokemonsQuery();
+  const { data: pokemonsQueryResponse } = usePokemonsQuery(generationState);
 
   const iconSelect = (type: string) => {
     const typeToIcon = {
@@ -179,13 +182,16 @@ export const PokemonsTable = () => {
                           <InputLabel id="region-label">Region</InputLabel>
                           <Field
                             name="region"
+                            defaultValue=""
                             id="region"
                             component={Select}
                             // selected={props.values.region}
+                            value={region}
                             labelId="region-label"
-                            onChange={(e: SelectChangeEvent) =>
-                              (props.values.region = e.target.value as string)
-                            }
+                            onChange={(e: SelectChangeEvent) => {
+                              // props.values.region = e.target.value as string;
+                              setRegion(e.target.value as string);
+                            }}
                             // (e: SelectChangeEvent) => {
                             //   props.setFieldValue(
                             //     props.values.region,
@@ -223,14 +229,17 @@ export const PokemonsTable = () => {
                             Generacja
                           </InputLabel>
                           <Field
+                            defaultValue=""
                             name="generation"
                             id="generation"
+                            value={generationState}
                             component={Select}
                             // selected={props.values.region}
                             labelId="generation-label"
-                            onChange={(e: SelectChangeEvent) =>
-                              (props.values.region = e.target.value as string)
-                            }
+                            onChange={(e: SelectChangeEvent) => {
+                              // props.values.region = e.target.value as string;
+                              setGenerationState(e.target.value as string);
+                            }}
                             // (e: SelectChangeEvent) => {
                             //   props.setFieldValue(
                             //     props.values.region,
@@ -278,7 +287,7 @@ export const PokemonsTable = () => {
                   className="w-96 [height:30rem] relative flex justify-center items-center flex-col"
                 >
                   <div className="m-auto ">
-                    <PokemonCard data={data} key={id} />
+                    <PokemonCard data={data} key={index} />
                   </div>
                   {/* <div className="rounded-3xl m-2 w-40 [background-color:rgba(0,0,0,0.08)] flex justify-center items-center">
                   <FormControlLabel

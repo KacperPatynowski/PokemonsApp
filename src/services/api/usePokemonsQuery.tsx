@@ -10,7 +10,7 @@ import { IPokemonDto } from "types/IPokemonDto";
 
 import { getApiInstance } from "./getApiInstance";
 import { getApiInstanceNoUrl } from "./getApiInstanceNoUrl";
-import { useFormikContext } from "formik";
+import { useField, useFormikContext } from "formik";
 
 /** @jsxImportSource @emotion/react */
 interface IResults {
@@ -19,21 +19,14 @@ interface IResults {
 }
 
 export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
-  const [_key, { page, searchedText }] = queryKey as [
+  const [_key, { page, searchedText, generation }] = queryKey as [
     string,
     {
       page: number;
       searchedText: string;
+      generation: string;
     },
   ];
-
-  const { values, submitForm } = useFormikContext();
-
-  //<IFormikValues>
-
-  useEffect(() => {
-    console.log(values);
-  }, [values]);
 
   const searchPokemons = async (searchText: string) => {
     let returnArray: any[] = [];
@@ -45,7 +38,17 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
     return returnArray;
   };
 
-  //usunac funcje zeby zapytania robic prosto do apiInstance
+  if (searchedText) {
+    const response = searchPokemons(searchedText);
+
+    return response;
+  }
+  console.log(generation);
+
+  // if(generation){
+  //   const response =
+  // }
+
   const getPokemons = (page: number) => {
     return getApiInstance().get(`/pokemon?limit=10&offset=${page}`);
   };
@@ -91,12 +94,6 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
     return pokemonsArrayScope;
   };
 
-  if (searchedText) {
-    const response = searchPokemons(searchedText);
-
-    return response;
-  }
-
   const pokemonsListBefore = await getPokemons(page);
 
   const response: Promise<any[]> = convertPokemons(pokemonsListBefore);
@@ -104,9 +101,13 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
   return await response;
 };
 
-export const usePokemonsQuery = (page = 0, searchedText = "") => {
+export const usePokemonsQuery = (
+  generation = "",
+  page = 1,
+  searchedText = "",
+) => {
   return useQuery<Array<IPokemonDto>>(
-    ["Pokemons", { page, searchedText }],
+    ["Pokemons", { page, searchedText, generation }],
     usePokemonsQuerry,
   );
 };
