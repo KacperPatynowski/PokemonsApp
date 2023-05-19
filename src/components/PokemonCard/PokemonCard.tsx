@@ -67,8 +67,9 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
       />
     );
   };
-
+  console.log(data);
   const { id, name, sprites, types } = data || {};
+  console.log(data, id);
 
   return (
     <>

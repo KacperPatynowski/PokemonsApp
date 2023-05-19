@@ -38,6 +38,10 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
     return returnArray;
   };
 
+  const searchPokemons2 = async (searchText: string) => {
+    return await getApiInstance().get<any>(`/pokemon/${searchText}`);
+  };
+
   if (searchedText) {
     const response = searchPokemons(searchedText);
 
@@ -45,9 +49,12 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
   }
   console.log(generation);
 
-  // if(generation){
-  //   const response =
-  // }
+  const getGeneration = (generation: string) => {
+    console.log(`generation/${generation}`);
+    return getApiInstance().get(
+      `generation/${generation as unknown as number}`,
+    );
+  };
 
   const getPokemons = (page: number) => {
     return getApiInstance().get(`/pokemon?limit=10&offset=${page}`);
@@ -84,7 +91,7 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
 
     const firstResponse = await pokemonsBefore.data.pokemon.map(
       async (pokemon: IResults) => {
-        const pokemonAfter = await convertPokemonsCall(pokemon.url);
+        const pokemonAfter = convertPokemonsCall(pokemon.url);
         pokemonsArrayScope.push(pokemonAfter);
       },
     );
@@ -93,6 +100,32 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
 
     return pokemonsArrayScope;
   };
+
+  const convertGeneration2 = async (pokemonList: IResults[]) => {
+    let pokemonsArrayScope: any[] = [];
+
+    for (const pokemon of pokemonList) {
+      try {
+        const pokemonAfter = await searchPokemons2(pokemon.name as string);
+        pokemonsArrayScope.push(pokemonAfter);
+      } catch (err) {
+        // Skip the iteration and do not add null to the array
+        continue;
+      }
+    }
+
+    return pokemonsArrayScope;
+  };
+
+  if (generation) {
+    const firstResponse = await getGeneration(generation);
+    const secondResponse = await convertGeneration2(
+      firstResponse.data.pokemon_species,
+    );
+    const array = secondResponse.slice(0, 10);
+
+    return array;
+  }
 
   const pokemonsListBefore = await getPokemons(page);
 
@@ -111,3 +144,34 @@ export const usePokemonsQuery = (
     usePokemonsQuerry,
   );
 };
+
+// const convertGeneration = async (pokemonList: any) => {
+//   let pokemonsArrayScope: any[] = [];
+//   const pokemonsBefore = pokemonList;
+
+//   console.log(pokemonList[0].url);
+
+//   const firstResponse = await pokemonsBefore.map(
+//     async (pokemon: IResults) => {
+//       const pokemonAfter = await convertPokemonsCall(pokemon.url as string);
+
+//       pokemonsArrayScope.push(pokemonAfter);
+//     },
+//   );
+//   await Promise.all(firstResponse);
+
+//   const pokemonsResponse = await pokemonList.map(
+//     async (pokemon: IResults) => {
+//       const pokemonAfter = await searchPokemons2(pokemon.name as string);
+
+//       pokemonsArrayScope.push(pokemonAfter);
+//     },
+//   );
+
+//   return pokemonsArrayScope;
+// };
+// pokemonList.map(async (pokemon: IResults) => {
+//   const pokemonAfter = await searchPokemons2(pokemon.name as string);
+//   console.log(pokemonAfter);
+//   pokemonsArrayScope.push(pokemonAfter);
+// });

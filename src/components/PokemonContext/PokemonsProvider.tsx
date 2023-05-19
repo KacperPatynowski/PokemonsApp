@@ -23,8 +23,6 @@ export const PokemonsProvider = ({ children }: any) => {
     return { pokemonsQueryResponse };
   }, [pokemonsQueryResponse]);
 
-  console.log(value);
-
   return (
     <PokemonsContext.Provider value={value}>
       {children}

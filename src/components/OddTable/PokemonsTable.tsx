@@ -82,6 +82,7 @@ export const PokemonsTable = () => {
   };
 
   const { data: pokemonsQueryResponse } = usePokemonsQuery(generationState);
+  console.log(pokemonsQueryResponse?.slice(0, 10));
 
   const iconSelect = (type: string) => {
     const typeToIcon = {
@@ -137,6 +138,19 @@ export const PokemonsTable = () => {
       "Galar",
       "Paldea",
     ];
+
+    // const generationNames = [
+    //   "I",
+    //   "II",
+    //   "III",
+    //   "IV",
+    //   "V",
+    //   "VI",
+    //   "VII",
+    //   "VIII",
+    //   "IX",
+    // ];
+    const generationNames = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
     return (
       <div>
@@ -251,14 +265,14 @@ export const PokemonsTable = () => {
                             onBlur={props.handleBlur}
                           >
                             <MenuItem value="">Wyszukaj po generacji</MenuItem>
-                            {regionNames.map((region) => {
+                            {generationNames.map((generation) => {
                               return (
                                 <MenuItem
-                                  value={region}
-                                  key={region}
-                                  id={region}
+                                  value={generation}
+                                  key={generation}
+                                  id={generation}
                                 >
-                                  {region}
+                                  {generation}
                                 </MenuItem>
                               );
                             })}

@@ -8,7 +8,7 @@ import { getApiInstance } from "./getApiInstance";
 export const getPokemonEvolutionQuery: QueryFunction<any> = async ({
   queryKey,
 }) => {
-  const [_key, id] = queryKey as [string, number];
+  const [_key, id] = queryKey as [string, string];
 
   const species = await getApiInstance().get(`/pokemon-species/${id}`);
 
@@ -20,8 +20,5 @@ export const getPokemonEvolutionQuery: QueryFunction<any> = async ({
 };
 
 export const usePokemonEvolution = (id: number) => {
-  return useQuery<IPokemonChainDto>(
-    ["pokemonEvolutions", id],
-    getPokemonEvolutionQuery,
-  );
+  return useQuery<any>(["pokemonEvolutions", id], getPokemonEvolutionQuery);
 };

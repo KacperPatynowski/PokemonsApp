@@ -25,7 +25,7 @@ export const getPokemonsStatsFN: QueryFunction<any> = async ({ queryKey }) => {
   const response = await Promise.all(
     pokemonsNames.map((pokemonName) => getPokemons(pokemonName)),
   );
-  console.log(response);
+
   return response;
 };
 

@@ -29,6 +29,7 @@ interface IProps {
 }
 
 export const PokemonStatsCard = ({ pokemonId }: IProps) => {
+  console.log(pokemonId);
   const {
     data: response,
     isLoading,
@@ -38,6 +39,7 @@ export const PokemonStatsCard = ({ pokemonId }: IProps) => {
   const [pokemonsArray, setPokemonsArray] = useState<Array<any>>([]);
 
   useEffect(() => {
+    console.log(response);
     const getPoekmonsArray = () => {
       let pokemonsArray: Array<any> = [];
       const evolutionChain = response!.data.chain;
@@ -48,8 +50,10 @@ export const PokemonStatsCard = ({ pokemonId }: IProps) => {
       ];
       if (evolutionChain.evolves_to[0].evolves_to[0].species.name) {
         pokemonsArray.push(
-          evolutionChain.evolves_to[0].evolves_to[0].species.name
+          evolutionChain.evolves_to[0].evolves_to[0].species.name,
         );
+      } else {
+        // do nothing
       }
 
       return pokemonsArray;
