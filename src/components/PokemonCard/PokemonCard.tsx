@@ -30,7 +30,7 @@ import { IPokemonDto } from "types/IPokemonDto";
 
 export const PokemonCard = ({ data }: IPokemonDto) => {
   const [addState, setAddState] = useState(false);
-
+  console.log(data);
   useEffect(() => {
     console.log(addState);
   }, [addState]);

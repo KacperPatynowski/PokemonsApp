@@ -4,8 +4,9 @@ import { QueryFunction, useQuery } from "react-query";
 import { IPokemonChainDto } from "types/IPokemonChainDto";
 
 import { getApiInstance } from "./getApiInstance";
+import { iPokemonEvolveDto } from "types/IPokemonEvolveDto";
 
-export const getPokemonEvolutionQuery: QueryFunction<any> = async ({
+export const getPokemonEvolutionQuery: QueryFunction<iPokemonEvolveDto> = async ({
   queryKey,
 }) => {
   const [_key, id] = queryKey as [string, string];
@@ -20,5 +21,5 @@ export const getPokemonEvolutionQuery: QueryFunction<any> = async ({
 };
 
 export const usePokemonEvolution = (id: number) => {
-  return useQuery<any>(["pokemonEvolutions", id], getPokemonEvolutionQuery);
+  return useQuery<iPokemonEvolveDto>(["pokemonEvolutions", id], getPokemonEvolutionQuery);
 };

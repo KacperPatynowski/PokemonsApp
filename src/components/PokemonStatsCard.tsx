@@ -17,6 +17,7 @@ import {
 import { usePokemonEvolution } from "services/api/usePokemonEvolutionQuery";
 import { usePokemonsStatsQuery } from "services/api/usePokemonsStatsQuery";
 import { IPokemonDto } from "types/IPokemonDto";
+import { iPokemonEvolveDto } from "types/IPokemonEvolveDto";
 
 interface IStats {
   id: string;
@@ -35,6 +36,7 @@ export const PokemonStatsCard = ({ pokemonId }: IProps) => {
     isLoading,
     isSuccess,
   } = usePokemonEvolution(pokemonId);
+  console.log(response);
 
   const [pokemonsArray, setPokemonsArray] = useState<Array<any>>([]);
 
@@ -47,14 +49,16 @@ export const PokemonStatsCard = ({ pokemonId }: IProps) => {
       pokemonsArray = [
         evolutionChain.species.name ?? "",
         evolutionChain.evolves_to[0].species.name ?? "",
+        evolutionChain?.evolves_to[0]?.evolves_to[0]?.species.name ?? "",
       ];
-      if (evolutionChain.evolves_to[0].evolves_to[0].species.name) {
-        pokemonsArray.push(
-          evolutionChain.evolves_to[0].evolves_to[0].species.name,
-        );
-      } else {
-        // do nothing
-      }
+      // if ((evolutionChain.evolves_to[0].evolves_to.length = 0)) {
+      //   return pokemonsArray;
+      // }
+      // if(evolutionChain?.evolves_to[0]?.evolves_to[0]){
+      //   pokemonsArray.push(
+      //     evolutionChain?.evolves_to[0]?.evolves_to[0]?.species.name
+      //   );
+      // }
 
       return pokemonsArray;
     };
