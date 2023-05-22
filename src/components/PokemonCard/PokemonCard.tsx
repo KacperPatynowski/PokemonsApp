@@ -28,12 +28,43 @@ import { PokemonStatsCard } from "components/PokemonStatsCard";
 import { useEffect, useState } from "react";
 import { IPokemonDto } from "types/IPokemonDto";
 
-export const PokemonCard = ({ data }: IPokemonDto) => {
-  const [addState, setAddState] = useState(false);
+// interface IHandle {
+//   handleSelection: (pokemonId: number) => void;
+// }
 
+export const PokemonCard = ({
+  data,
+  handleCompare,
+}: {
+  data: IPokemonDto["data"];
+  handleCompare: (pokemonId: number) => void;
+}) => {
+  const [addState, setAddState] = useState(false);
+  const { id, name, sprites, types } = data;
+  console.log(id);
   useEffect(() => {
     console.log(addState);
   }, [addState]);
+
+  const handlePokemonSelection = (id: number) => {
+    handleCompare(id);
+  };
+
+  // const [selectedPokemonIds, setSelectedPokemonIds] = useState<number[]>([]);
+
+  // const handlePokemonSelection = (pokemonId: number) => {
+  //   if (selectedPokemonIds.includes(pokemonId)) {
+  //     setSelectedPokemonIds(
+  //       selectedPokemonIds.filter((id) => id !== pokemonId),
+  //     );
+  //   } else {
+  //     setSelectedPokemonIds([...selectedPokemonIds, pokemonId]);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   console.log(selectedPokemonIds);
+  // }, [selectedPokemonIds]);
 
   const iconSelect = (type: string, key: number) => {
     const typeToIcon = {
@@ -67,9 +98,6 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
       />
     );
   };
-  console.log(data);
-  const { id, name, sprites, types } = data || {};
-  console.log(data, id);
 
   return (
     <>
@@ -116,7 +144,10 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
               </div>
               <figure>
                 <img
-                  src={sprites.other.dream_world.front_default}
+                  src={
+                    sprites.other.dream_world.front_default ||
+                    sprites.front_default
+                  }
                   alt="pokemon"
                   className="w-32 h-32 m-4 "
                 />
@@ -128,12 +159,20 @@ export const PokemonCard = ({ data }: IPokemonDto) => {
                     return iconSelect(type.type.name, index);
                   })}
                 </div>
+                <div id="compare">
+                  <FormControlLabel
+                    control={
+                      <Checkbox onChange={() => handlePokemonSelection(id)} />
+                    }
+                    label="Compare"
+                  />
+                </div>
               </div>
             </div>
             {/* back */}
             <div
               id="back"
-              className="[backface-visibility:hidden] [transform:rotateY(180deg)] w-full h-full absolute flex flex-row justify-center items-center "
+              className="[backface-visibility:hidden] [transform:rotateY(180deg)] w-full h-full absolute flex flex-row justify-center items-center top-[4rem]"
             >
               <PokemonStatsCard pokemonId={id} />
             </div>

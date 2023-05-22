@@ -31,9 +31,11 @@ import {
   Input,
   InputLabel,
   MenuItem,
+  Modal,
   Select,
   SelectChangeEvent,
   TextField,
+  Typography,
 } from "@mui/material";
 import { CompareButton } from "components/CompareButton";
 import { FormGroup, Label } from "reactstrap";
@@ -59,19 +61,39 @@ export const PokemonsTable = () => {
   const [page, setPage] = useState(1);
   const [generationState, setGenerationState] = useState("");
   const [region, setRegion] = useState("");
+  const [debouncedSearchedText, setDebouncedSearchedText] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    if (selectedPokemonIds.length === 2) {
+      setOpen(true);
+    }
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
-    console.log("checkedIds", selectedPokemonIds);
+    if (selectedPokemonIds.length === 2) {
+      setOpen(true);
+    }
   }, [selectedPokemonIds]);
 
-  // const { values: generation } = useFormikContext<IFormikValues>();
-
   useEffect(() => {
-    console.log(generationState);
-  }, [generationState]);
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchedText(searchedText);
+    }, 3000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [searchedText]);
+
+  // useEffect(() => {
+  //   console.log(selectedPokemonIds);
+  // }, [selectedPokemonIds]);
 
   const handlePokemonSelection = (pokemonId: number) => {
-    console.log(pokemonId, selectedPokemonIds);
     if (selectedPokemonIds.includes(pokemonId)) {
       setSelectedPokemonIds(
         selectedPokemonIds.filter((id) => id !== pokemonId),
@@ -81,8 +103,10 @@ export const PokemonsTable = () => {
     }
   };
 
-  const { data: pokemonsQueryResponse } = usePokemonsQuery(generationState);
-  console.log(pokemonsQueryResponse?.slice(0, 10));
+  const { data: pokemonsQueryResponse } = usePokemonsQuery(
+    generationState,
+    debouncedSearchedText,
+  );
 
   const iconSelect = (type: string) => {
     const typeToIcon = {
@@ -108,11 +132,6 @@ export const PokemonsTable = () => {
       shadow: <Brightness5Icon />,
     };
     return typeToIcon[type as keyof typeof typeToIcon];
-  };
-
-  const handleChange = (event: SelectChangeEvent) => {
-    console.log(event.target.value);
-    setSearchedText(event.target.value);
   };
 
   if (pokemonsQueryResponse) {
@@ -152,6 +171,9 @@ export const PokemonsTable = () => {
     // ];
     const generationNames = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
+    if (selectedPokemonIds.length === 2) {
+    }
+
     return (
       <div>
         <div className="flex justify-center items-center">
@@ -179,8 +201,10 @@ export const PokemonsTable = () => {
                             type="text"
                             id="name"
                             component={TextField}
-                            value={props.values.name}
-                            onChange={props.handleChange}
+                            value={searchedText}
+                            onChange={(e: SelectChangeEvent) => {
+                              setSearchedText(e.target.value as string);
+                            }}
                             onBlur={props.handleBlur}
                           />
                         </FormGroup>
@@ -203,17 +227,8 @@ export const PokemonsTable = () => {
                             value={region}
                             labelId="region-label"
                             onChange={(e: SelectChangeEvent) => {
-                              // props.values.region = e.target.value as string;
                               setRegion(e.target.value as string);
                             }}
-                            // (e: SelectChangeEvent) => {
-                            //   props.setFieldValue(
-                            //     props.values.region,
-                            //     e.target.value as string,
-                            //     false,
-                            //   );
-                            //   console.log(e.target.value as string);
-                            // }
                             onBlur={props.handleBlur}
                           >
                             <MenuItem value="">Wybierz swój region</MenuItem>
@@ -251,17 +266,8 @@ export const PokemonsTable = () => {
                             // selected={props.values.region}
                             labelId="generation-label"
                             onChange={(e: SelectChangeEvent) => {
-                              // props.values.region = e.target.value as string;
                               setGenerationState(e.target.value as string);
                             }}
-                            // (e: SelectChangeEvent) => {
-                            //   props.setFieldValue(
-                            //     props.values.region,
-                            //     e.target.value as string,
-                            //     false,
-                            //   );
-                            //   console.log(e.target.value as string);
-                            // }
                             onBlur={props.handleBlur}
                           >
                             <MenuItem value="">Wyszukaj po generacji</MenuItem>
@@ -301,7 +307,11 @@ export const PokemonsTable = () => {
                   className="w-96 [height:30rem] relative flex justify-center items-center flex-col"
                 >
                   <div className="m-auto ">
-                    <PokemonCard data={data} key={index} />
+                    <PokemonCard
+                      data={data}
+                      key={index}
+                      handleCompare={handlePokemonSelection}
+                    />
                   </div>
                   {/* <div className="rounded-3xl m-2 w-40 [background-color:rgba(0,0,0,0.08)] flex justify-center items-center">
                   <FormControlLabel
@@ -319,6 +329,23 @@ export const PokemonsTable = () => {
               </>
             );
           })}
+        </div>
+        <div id="modal">
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+          >
+            <Box>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Text in a modal
+              </Typography>
+              <Typography id="modal-modal-description">
+                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+              </Typography>
+            </Box>
+          </Modal>
         </div>
       </div>
     );

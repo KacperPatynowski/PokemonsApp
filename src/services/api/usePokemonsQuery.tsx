@@ -42,13 +42,6 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
     return await getApiInstance().get<any>(`/pokemon/${searchText}`);
   };
 
-  if (searchedText) {
-    const response = searchPokemons(searchedText);
-
-    return response;
-  }
-  console.log(generation);
-
   const getGeneration = (generation: string) => {
     console.log(`generation/${generation}`);
     return getApiInstance().get(
@@ -85,22 +78,6 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
     return pokemonsArrayScope;
   };
 
-  const convertPokemonsType = async (pokemonList: any) => {
-    let pokemonsArrayScope: any[] = [];
-    const pokemonsBefore = pokemonList;
-
-    const firstResponse = await pokemonsBefore.data.pokemon.map(
-      async (pokemon: IResults) => {
-        const pokemonAfter = convertPokemonsCall(pokemon.url);
-        pokemonsArrayScope.push(pokemonAfter);
-      },
-    );
-
-    await Promise.all(firstResponse);
-
-    return pokemonsArrayScope;
-  };
-
   const convertGeneration2 = async (pokemonList: IResults[]) => {
     let pokemonsArrayScope: any[] = [];
 
@@ -117,27 +94,45 @@ export const usePokemonsQuerry: QueryFunction<any> = async ({ queryKey }) => {
     return pokemonsArrayScope;
   };
 
-  if (generation) {
-    const firstResponse = await getGeneration(generation);
-    const secondResponse = await convertGeneration2(
-      firstResponse.data.pokemon_species,
-    );
-    const array = secondResponse.slice(0, 10);
+  try {
+    if (generation) {
+      const firstResponse = await getGeneration(generation);
+      const secondResponse = await convertGeneration2(
+        firstResponse.data.pokemon_species,
+      );
+      const array = secondResponse.slice(0, 10);
 
-    return array;
+      return array;
+    }
+    if (searchedText) {
+      let response;
+      try {
+        response = searchPokemons(searchedText);
+      } catch (err) {
+        console.log(err);
+        const pokemonsListBefore = await getPokemons(page);
+        response = convertPokemons(pokemonsListBefore);
+      }
+
+      return response;
+    }
+    const pokemonsListBefore = await getPokemons(page);
+    const response: Promise<any[]> = convertPokemons(pokemonsListBefore);
+
+    return await response;
+  } catch (err) {
+    const pokemonsListBefore = await getPokemons(page);
+
+    const response: Promise<any[]> = convertPokemons(pokemonsListBefore);
+
+    return await response;
   }
-
-  const pokemonsListBefore = await getPokemons(page);
-
-  const response: Promise<any[]> = convertPokemons(pokemonsListBefore);
-
-  return await response;
 };
 
 export const usePokemonsQuery = (
   generation = "",
-  page = 1,
   searchedText = "",
+  page = 0,
 ) => {
   return useQuery<Array<IPokemonDto>>(
     ["Pokemons", { page, searchedText, generation }],
