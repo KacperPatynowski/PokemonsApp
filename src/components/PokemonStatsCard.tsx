@@ -16,6 +16,7 @@ import {
 } from "reaviz";
 import { usePokemonEvolution } from "services/api/usePokemonEvolutionQuery";
 import { usePokemonsStatsQuery } from "services/api/usePokemonsStatsQuery";
+import { usePokemonsStatsQueryByName } from "services/api/usePokemonsStatsQueryByName";
 import { IPokemonDto } from "types/IPokemonDto";
 import { iPokemonEvolveDto } from "types/IPokemonEvolveDto";
 
@@ -26,39 +27,43 @@ interface IStats {
 }
 
 interface IProps {
-  pokemonId: number;
+  pokemonId?: number;
+  pokemonName?: string
+  
+  variant: "single" | "multiple";
 }
 
-export const PokemonStatsCard = ({ pokemonId }: IProps) => {
-  console.log(pokemonId);
+export const PokemonStatsCard = ({ pokemonId, variant, pokemonName }: IProps) => {
+
+  let pokemonsResponse;
+  if(variant === "multiple"){
   const {
     data: response,
     isLoading,
     isSuccess,
-  } = usePokemonEvolution(pokemonId);
-  console.log(response);
+  } = usePokemonEvolution(pokemonId!);
 
   const [pokemonsArray, setPokemonsArray] = useState<Array<any>>([]);
 
   useEffect(() => {
-    console.log(response);
     const getPoekmonsArray = () => {
       let pokemonsArray: Array<any> = [];
       const evolutionChain = response!.data.chain;
 
-      pokemonsArray = [
-        evolutionChain.species.name ?? "",
-        evolutionChain.evolves_to[0].species.name ?? "",
-        evolutionChain?.evolves_to[0]?.evolves_to[0]?.species.name ?? "",
-      ];
-      // if ((evolutionChain.evolves_to[0].evolves_to.length = 0)) {
-      //   return pokemonsArray;
-      // }
-      // if(evolutionChain?.evolves_to[0]?.evolves_to[0]){
-      //   pokemonsArray.push(
-      //     evolutionChain?.evolves_to[0]?.evolves_to[0]?.species.name
-      //   );
-      // }
+      if (evolutionChain?.species.name) {
+        pokemonsArray.push(evolutionChain.species.name);
+      }
+      if (evolutionChain?.evolves_to[0]?.species.name) {
+        pokemonsArray.push(evolutionChain.evolves_to[0].species.name);
+      }
+      if (
+        evolutionChain?.evolves_to[0]?.evolves_to[0]?.species.name &&
+        evolutionChain?.evolves_to[0]?.evolves_to[0]?.species.name.trim() !== ""
+      ) {
+        pokemonsArray.push(
+          evolutionChain.evolves_to[0].evolves_to[0].species.name
+        );
+      }
 
       return pokemonsArray;
     };
@@ -70,11 +75,15 @@ export const PokemonStatsCard = ({ pokemonId }: IProps) => {
   }, [response, isSuccess]);
 
   const { data: pokemonsResponse, isLoading: statsLoading } =
-    usePokemonsStatsQuery(pokemonsArray);
+    usePokemonsStatsQuery(pokemonsArray);}
+    else {
+      const { data: pokemonsResponse, isLoading: statsLoading } =
+      usePokemonsStatsQueryByName(pokemonId!);
+    }
 
   return (
     <>
-      {pokemonsResponse?.map((pokemon, index) => {
+      {pokemonsResponse!.map((pokemon, index) => {
         const { id, name, sprites, types, stats } = pokemon.data || {};
         const pokemonImg = sprites.other.dream_world.front_default;
 

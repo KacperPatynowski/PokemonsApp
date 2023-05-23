@@ -31,9 +31,11 @@ import {
   Input,
   InputLabel,
   MenuItem,
+  Modal,
   Select,
   SelectChangeEvent,
   TextField,
+  Typography,
 } from "@mui/material";
 import { CompareButton } from "components/CompareButton";
 import { FormGroup, Label } from "reactstrap";
@@ -48,6 +50,7 @@ import { usePokemonEvolution } from "services/api/usePokemonEvolutionQuery";
 import { usePokemonsQuery } from "services/api/usePokemonsQuery";
 
 import { IPokemonDto } from "types/IPokemonDto";
+import { PokemonStatsCard } from "components/PokemonStatsCard";
 
 interface IFormikValues {
   values: { name: string; region: string; generation: string };
@@ -59,30 +62,56 @@ export const PokemonsTable = () => {
   const [page, setPage] = useState(1);
   const [generationState, setGenerationState] = useState("");
   const [region, setRegion] = useState("");
+  const [debouncedSearchedText, setDebouncedSearchedText] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    if (selectedPokemonIds.length === 2) {
+      setOpen(true);
+    }
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
-    console.log("checkedIds", selectedPokemonIds);
+    if (selectedPokemonIds.length === 2) {
+      setOpen(true);
+    }
   }, [selectedPokemonIds]);
 
-  // const { values: generation } = useFormikContext<IFormikValues>();
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedSearchedText(searchedText);
+    }, 3000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [searchedText]);
 
   useEffect(() => {
-    console.log(generationState);
-  }, [generationState]);
+    console.log(open);
+  }, [open]);
+
+  useEffect(() => {
+    console.log(selectedPokemonIds);
+  }, [selectedPokemonIds]);
 
   const handlePokemonSelection = (pokemonId: number) => {
-    console.log(pokemonId, selectedPokemonIds);
     if (selectedPokemonIds.includes(pokemonId)) {
       setSelectedPokemonIds(
-        selectedPokemonIds.filter((id) => id !== pokemonId),
+        selectedPokemonIds.filter((id) => id !== pokemonId)
       );
     } else {
       setSelectedPokemonIds([...selectedPokemonIds, pokemonId]);
     }
   };
 
-  const { data: pokemonsQueryResponse } = usePokemonsQuery(generationState);
-  console.log(pokemonsQueryResponse?.slice(0, 10));
+  const { data: pokemonsQueryResponse } = usePokemonsQuery(
+    generationState,
+    debouncedSearchedText
+  );
 
   const iconSelect = (type: string) => {
     const typeToIcon = {
@@ -110,14 +139,9 @@ export const PokemonsTable = () => {
     return typeToIcon[type as keyof typeof typeToIcon];
   };
 
-  const handleChange = (event: SelectChangeEvent) => {
-    console.log(event.target.value);
-    setSearchedText(event.target.value);
-  };
-
   if (pokemonsQueryResponse) {
     const sortedPokemons = pokemonsQueryResponse.sort(
-      (a: IPokemonDto, b: IPokemonDto) => a.data.id - b.data.id,
+      (a: IPokemonDto, b: IPokemonDto) => a.data.id - b.data.id
     );
 
     const initValues = {
@@ -139,6 +163,20 @@ export const PokemonsTable = () => {
       "Paldea",
     ];
 
+    const style = {
+      position: "absolute" as "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: 1 / 2,
+      height: 1 / 2,
+      bgcolor: "background.paper",
+      border: "2px solid #000",
+      borderRadius: 6,
+      boxShadow: 24,
+      p: 4,
+    };
+
     // const generationNames = [
     //   "I",
     //   "II",
@@ -151,6 +189,9 @@ export const PokemonsTable = () => {
     //   "IX",
     // ];
     const generationNames = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+
+    if (selectedPokemonIds.length === 2) {
+    }
 
     return (
       <div>
@@ -179,8 +220,10 @@ export const PokemonsTable = () => {
                             type="text"
                             id="name"
                             component={TextField}
-                            value={props.values.name}
-                            onChange={props.handleChange}
+                            value={searchedText}
+                            onChange={(e: SelectChangeEvent) => {
+                              setSearchedText(e.target.value as string);
+                            }}
                             onBlur={props.handleBlur}
                           />
                         </FormGroup>
@@ -203,17 +246,8 @@ export const PokemonsTable = () => {
                             value={region}
                             labelId="region-label"
                             onChange={(e: SelectChangeEvent) => {
-                              // props.values.region = e.target.value as string;
                               setRegion(e.target.value as string);
                             }}
-                            // (e: SelectChangeEvent) => {
-                            //   props.setFieldValue(
-                            //     props.values.region,
-                            //     e.target.value as string,
-                            //     false,
-                            //   );
-                            //   console.log(e.target.value as string);
-                            // }
                             onBlur={props.handleBlur}
                           >
                             <MenuItem value="">Wybierz swój region</MenuItem>
@@ -251,17 +285,8 @@ export const PokemonsTable = () => {
                             // selected={props.values.region}
                             labelId="generation-label"
                             onChange={(e: SelectChangeEvent) => {
-                              // props.values.region = e.target.value as string;
                               setGenerationState(e.target.value as string);
                             }}
-                            // (e: SelectChangeEvent) => {
-                            //   props.setFieldValue(
-                            //     props.values.region,
-                            //     e.target.value as string,
-                            //     false,
-                            //   );
-                            //   console.log(e.target.value as string);
-                            // }
                             onBlur={props.handleBlur}
                           >
                             <MenuItem value="">Wyszukaj po generacji</MenuItem>
@@ -301,7 +326,11 @@ export const PokemonsTable = () => {
                   className="w-96 [height:30rem] relative flex justify-center items-center flex-col"
                 >
                   <div className="m-auto ">
-                    <PokemonCard data={data} key={index} />
+                    <PokemonCard
+                      data={data}
+                      key={index}
+                      handleCompare={handlePokemonSelection}
+                    />
                   </div>
                   {/* <div className="rounded-3xl m-2 w-40 [background-color:rgba(0,0,0,0.08)] flex justify-center items-center">
                   <FormControlLabel
@@ -319,6 +348,35 @@ export const PokemonsTable = () => {
               </>
             );
           })}
+        </div>
+        <div id="modal">
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+          >
+            <Box sx={style}>
+              {open ? (
+                <>
+                  <div className="flex justify-center flex-row">
+                    {selectedPokemonIds.map((id, index) => {
+                      console.log(id);
+                      return (
+                        <>
+                          <PokemonStatsCard
+                            pokemonId={id}
+                            key={index}
+                            variant="single"
+                          />
+                        </>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : null}
+            </Box>
+          </Modal>
         </div>
       </div>
     );

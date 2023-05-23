@@ -32,7 +32,7 @@ export const PokemonEvolution = ({ pokemonId, buttonMessage }: IProps) => {
       ];
       if (evolutionChain.evolves_to[0].evolves_to[0].species.name) {
         pokemonsArray.push(
-          evolutionChain.evolves_to[0].evolves_to[0].species.name,
+          evolutionChain.evolves_to[0].evolves_to[0].species.name
         );
       }
 
@@ -90,7 +90,10 @@ export const PokemonEvolution = ({ pokemonId, buttonMessage }: IProps) => {
 
             return (
               <div>
-                <PokemonStatsCard pokemonId={pokemon.data.id} />
+                <PokemonStatsCard
+                  pokemonId={pokemon.data.id}
+                  variant="multiple"
+                />
               </div>
             );
           })}
