@@ -16,9 +16,7 @@ import {
 } from "reaviz";
 import { usePokemonEvolution } from "services/api/usePokemonEvolutionQuery";
 import { usePokemonsStatsQuery } from "services/api/usePokemonsStatsQuery";
-import { usePokemonsStatsQueryByName } from "services/api/usePokemonsStatsQueryByName";
 import { IPokemonDto } from "types/IPokemonDto";
-import { iPokemonEvolveDto } from "types/IPokemonEvolveDto";
 
 interface IStats {
   id: string;
@@ -27,21 +25,15 @@ interface IStats {
 }
 
 interface IProps {
-  pokemonId?: number;
-  pokemonName?: string
-  
-  variant: "single" | "multiple";
+  pokemonId: number;
 }
 
-export const PokemonStatsCard = ({ pokemonId, variant, pokemonName }: IProps) => {
-
-  let pokemonsResponse;
-  if(variant === "multiple"){
+export const PokemonStatsCard = ({ pokemonId }: IProps) => {
   const {
     data: response,
     isLoading,
     isSuccess,
-  } = usePokemonEvolution(pokemonId!);
+  } = usePokemonEvolution(pokemonId);
 
   const [pokemonsArray, setPokemonsArray] = useState<Array<any>>([]);
 
@@ -61,7 +53,7 @@ export const PokemonStatsCard = ({ pokemonId, variant, pokemonName }: IProps) =>
         evolutionChain?.evolves_to[0]?.evolves_to[0]?.species.name.trim() !== ""
       ) {
         pokemonsArray.push(
-          evolutionChain.evolves_to[0].evolves_to[0].species.name
+          evolutionChain.evolves_to[0].evolves_to[0].species.name,
         );
       }
 
@@ -75,15 +67,11 @@ export const PokemonStatsCard = ({ pokemonId, variant, pokemonName }: IProps) =>
   }, [response, isSuccess]);
 
   const { data: pokemonsResponse, isLoading: statsLoading } =
-    usePokemonsStatsQuery(pokemonsArray);}
-    else {
-      const { data: pokemonsResponse, isLoading: statsLoading } =
-      usePokemonsStatsQueryByName(pokemonId!);
-    }
+    usePokemonsStatsQuery(pokemonsArray);
 
   return (
     <>
-      {pokemonsResponse!.map((pokemon, index) => {
+      {pokemonsResponse?.map((pokemon, index) => {
         const { id, name, sprites, types, stats } = pokemon.data || {};
         const pokemonImg = sprites.other.dream_world.front_default;
 
@@ -121,7 +109,7 @@ export const PokemonStatsCard = ({ pokemonId, variant, pokemonName }: IProps) =>
         ];
 
         return (
-          <div>
+          <div key={index}>
             <>
               <div className="card w-96 bg-gray-100 shadow-xl m-2 mt-12">
                 <figure className="mt-4">

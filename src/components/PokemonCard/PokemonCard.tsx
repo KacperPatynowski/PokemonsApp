@@ -23,6 +23,7 @@ import {
   Water as WaterIcon,
 } from "@mui/icons-material";
 import { Checkbox, Chip, FormControlLabel, Typography } from "@mui/material";
+import { CheckBoxIcon } from "components/CheckBoxIcon/CheckBoxIcon";
 import { PokemonEvolution } from "components/PokemonEvolution";
 import { PokemonStatsCard } from "components/PokemonStatsCard";
 import { useEffect, useState } from "react";
@@ -163,12 +164,13 @@ export const PokemonCard = ({
                   <>
                     <div id="compare">
                       <FormControlLabel
+                        labelPlacement="top"
                         control={
-                          <Checkbox
+                          <CheckBoxIcon
                             onChange={() => handlePokemonSelection(id)}
                           />
                         }
-                        label="Compare"
+                        label="Compare Stats"
                       />
                     </div>
                   </>
@@ -180,7 +182,7 @@ export const PokemonCard = ({
               id="back"
               className="[backface-visibility:hidden] [transform:rotateY(180deg)] w-full h-full absolute flex flex-row justify-center items-center top-[4rem]"
             >
-              <PokemonStatsCard pokemonId={id} variant="multiple" />
+              <PokemonStatsCard pokemonId={id} />
             </div>
           </div>
         </div>

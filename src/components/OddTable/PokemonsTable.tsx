@@ -1,5 +1,6 @@
 /** @format */
 
+import SyncAltIcon from "@mui/icons-material/SyncAlt";
 import {
   Air as AirIcon,
   AutoAwesome as AutoAwesomeIcon,
@@ -51,6 +52,8 @@ import { usePokemonsQuery } from "services/api/usePokemonsQuery";
 
 import { IPokemonDto } from "types/IPokemonDto";
 import { PokemonStatsCard } from "components/PokemonStatsCard";
+import { PokemonStatsCard2 } from "components/PokemonStatsCard2";
+import { blue } from "@mui/material/colors";
 
 interface IFormikValues {
   values: { name: string; region: string; generation: string };
@@ -101,7 +104,7 @@ export const PokemonsTable = () => {
   const handlePokemonSelection = (pokemonId: number) => {
     if (selectedPokemonIds.includes(pokemonId)) {
       setSelectedPokemonIds(
-        selectedPokemonIds.filter((id) => id !== pokemonId)
+        selectedPokemonIds.filter((id) => id !== pokemonId),
       );
     } else {
       setSelectedPokemonIds([...selectedPokemonIds, pokemonId]);
@@ -110,7 +113,7 @@ export const PokemonsTable = () => {
 
   const { data: pokemonsQueryResponse } = usePokemonsQuery(
     generationState,
-    debouncedSearchedText
+    debouncedSearchedText,
   );
 
   const iconSelect = (type: string) => {
@@ -141,7 +144,7 @@ export const PokemonsTable = () => {
 
   if (pokemonsQueryResponse) {
     const sortedPokemons = pokemonsQueryResponse.sort(
-      (a: IPokemonDto, b: IPokemonDto) => a.data.id - b.data.id
+      (a: IPokemonDto, b: IPokemonDto) => a.data.id - b.data.id,
     );
 
     const initValues = {
@@ -168,8 +171,8 @@ export const PokemonsTable = () => {
       top: "50%",
       left: "50%",
       transform: "translate(-50%, -50%)",
-      width: 1 / 2,
-      height: 1 / 2,
+      // width: 1 / 2,
+      // height: 1 / 2,
       bgcolor: "background.paper",
       border: "2px solid #000",
       borderRadius: 6,
@@ -361,15 +364,18 @@ export const PokemonsTable = () => {
                 <>
                   <div className="flex justify-center flex-row">
                     {selectedPokemonIds.map((id, index) => {
-                      console.log(id);
+                      console.log(index);
                       return (
-                        <>
-                          <PokemonStatsCard
-                            pokemonId={id}
-                            key={index}
-                            variant="single"
-                          />
-                        </>
+                        <div className="flex justify-center flex-row items-center">
+                          {index === 1 ? (
+                            <SyncAltIcon
+                              sx={{ fontSize: 50, color: blue[600] }}
+                            />
+                          ) : null}
+                          <div className="m-4">
+                            <PokemonStatsCard2 pokemonId={id} key={index} />
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
